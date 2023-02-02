@@ -29,7 +29,7 @@ const Header = () => {
           <div className="row align-items-center">
             <div className="col-2">
               <h2>
-                <Link to={"/"} className="text-white">
+                <Link to="/" className="text-white">
                   iThinkTech
                 </Link>
               </h2>
@@ -142,10 +142,10 @@ const Header = () => {
                 </div>
                 <div className="menu-links">
                   <div className="d-flex align-items-center gap-15">
-                    <NavLink to={"/"}>Home</NavLink>
-                    <NavLink to={"/"}>Our Store</NavLink>
-                    <NavLink to={"/"}>Blogs</NavLink>
-                    <NavLink to={"/contact"}>Contact</NavLink>
+                    <NavLink to="/">Home</NavLink>
+                    <NavLink to="/">Our Store</NavLink>
+                    <NavLink to="/">Blogs</NavLink>
+                    <NavLink to="/contact">Contact</NavLink>
                   </div>
                 </div>
               </div>

@@ -678,4 +678,13 @@ footer .input-group-text {
   color: white;
 }
 
-/* Login Page E */
+/* Login Page End */
+
+/* Forgot Password Page */
+
+.auth-card p {
+  font-size: 13px;
+  color: var(--color-777777);
+}
+
+/* Forgot Password Page End */

@@ -662,7 +662,8 @@ footer .input-group-text {
   border-color: transparent;
 }
 
-.auth-card a {
+.auth-card a,
+span {
   font-size: 14px;
   font-weight: 400;
   color: var(--color-1c1c1b);

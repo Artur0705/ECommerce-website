@@ -264,7 +264,6 @@ footer .input-group-text {
 /* Blog Part */
 
 .blog-card {
-  background-color: white;
   border-radius: 10px;
 }
 
@@ -274,6 +273,7 @@ footer .input-group-text {
 }
 
 .blog-content {
+  background-color: white;
   padding: 15px;
 }
 

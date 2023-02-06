@@ -6,9 +6,6 @@ import ProductCard from "../components/ProductCard";
 
 const OurStore = () => {
   const [grid, setGrid] = useState(4);
-  const gridSetter = (i) => {
-    setGrid(1);
-  };
 
   return (
     <>

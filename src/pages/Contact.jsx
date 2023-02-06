@@ -1,6 +1,8 @@
 import React from "react";
 import BreadCrumb from "../components/BreadCrumb";
 import Meta from "../components/Meta";
+import { AiOutlineHome, AiOutlineMail } from "react-icons/ai";
+import { BiPhoneCall, BiInfoCircle } from "react-icons/bi";
 
 const Contact = () => {
   return (
@@ -65,6 +67,30 @@ const Contact = () => {
                 </div>
                 <div>
                   <h3 className="contact-title mb-4">Get In Touch With Us</h3>
+                  <div>
+                    <ul className="ps-0">
+                      <li className="mb-3 d-flex gap-15 align-items-center">
+                        <AiOutlineHome className="fs-5" />
+                        <address>
+                          123 Collins str. Melbourne, Victoria, 3000
+                        </address>
+                      </li>
+                      <li className="mb-3 d-flex gap-15 align-items-center">
+                        <BiPhoneCall className="fs-5" />
+                        <a href="tel:+61421123456">+61 421 123 456</a>{" "}
+                      </li>
+                      <li className="mb-3 d-flex gap-15 align-items-center">
+                        <AiOutlineMail className="fs-5" />
+                        <a href="mailto:artlil420@gmail.com">
+                          info@ithinkteck.com
+                        </a>
+                      </li>
+                      <li className="mb-3 d-flex gap-15 align-items-center">
+                        <BiInfoCircle className="fs-5" />
+                        <p className="mb-0">Monday-Friday 9AM - 6PM</p>
+                      </li>
+                    </ul>
+                  </div>
                 </div>
               </div>
             </div>

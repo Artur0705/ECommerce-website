@@ -118,7 +118,7 @@ const Header = () => {
                       data-bs-toggle="dropdown"
                       aria-expanded="false"
                     >
-                      <span className="me-5 d-inline-block">
+                      <span className="text-white me-5 d-inline-block">
                         Shop Categorie
                       </span>
                     </button>

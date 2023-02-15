@@ -4,7 +4,7 @@ import BreadCrumb from "../components/BreadCrumb";
 import Meta from "../components/Meta";
 import { HiOutlineArrowLeft } from "react-icons/hi";
 
-export const SingleBlog = () => {
+const SingleBlog = () => {
   return (
     <>
       <Meta title={"Single Blog"} />
@@ -41,3 +41,5 @@ export const SingleBlog = () => {
     </>
   );
 };
+
+export default SingleBlog;

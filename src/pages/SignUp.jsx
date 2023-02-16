@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import BreadCrumb from "../components/BreadCrumb";
 import Container from "../components/Container";
+import CustomInput from "../components/CustomInput";
 import Meta from "../components/Meta";
 
 const SignUp = () => {
@@ -20,40 +21,19 @@ const SignUp = () => {
                     "
                 className="d-flex flex-column gap-15"
               >
-                <div>
-                  <input
-                    type="text"
-                    name="name"
-                    placeholder="Name"
-                    className="form-control"
-                  />
-                </div>
+                <CustomInput type="text" name="name" placeholder="Name" />
+                <CustomInput type="email" name="email" placeholder="Email" />
+                <CustomInput
+                  type="tel"
+                  name="mobile"
+                  placeholder="Mobile Number"
+                />
+                <CustomInput
+                  type="password"
+                  name="password"
+                  placeholder="Password"
+                />
 
-                <div>
-                  <input
-                    type="email"
-                    name="email"
-                    placeholder="Email"
-                    className="form-control"
-                  />
-                </div>
-
-                <div>
-                  <input
-                    type="tel"
-                    name="mobile"
-                    placeholder="Mobile Number"
-                    className="form-control"
-                  />
-                </div>
-                <div className="mt-1">
-                  <input
-                    type="password"
-                    name="password"
-                    placeholder="Password"
-                    className="form-control"
-                  />
-                </div>
                 <div>
                   <div className="mt-3 d-flex justify-content-center align-items-center gap-15">
                     <button className="button border-0">Sign Up</button>

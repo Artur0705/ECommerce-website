@@ -3,7 +3,6 @@ import ReactStars from "react-rating-stars-component";
 import { Link, useLocation } from "react-router-dom";
 import prodcompare from "../images/prodcompare.svg";
 import wish from "../images/wish.svg";
-import wishlist from "../images/wishlist.svg";
 import watch from "../images/watch.jpg";
 import watch2 from "../images/watch-1.jpeg";
 import addcart from "../images/add-cart.svg";
@@ -19,7 +18,16 @@ const ProductCard = (props) => {
           location.pathname == "/products" ? `gr-${grid}` : "col-3"
         }`}
       >
-        <Link to="/products/:id" className="product-card position-relative">
+        <Link
+          to={`${
+            location.pathname == "/"
+              ? "/products/:id"
+              : location.pathname == "/products/:id"
+              ? "/products/:id"
+              : ":id"
+          }`}
+          className="product-card position-relative"
+        >
           <div className="wishlist-icon position-absolute">
             <button className="border-0 bg-transparent">
               <img src={wish} alt="wishlist" />
@@ -68,7 +76,16 @@ const ProductCard = (props) => {
           location.pathname == "/products" ? `gr-${grid}` : "col-3"
         }`}
       >
-        <Link to="/products/:id" className="product-card position-relative">
+        <Link
+          to={`${
+            location.pathname == "/"
+              ? "/products/:id"
+              : location.pathname == "/products/:id"
+              ? "/products/:id"
+              : ":id"
+          }`}
+          className="product-card position-relative"
+        >
           <div className="wishlist-icon position-absolute">
             <button className="border-0 bg-transparent">
               <img src={wish} alt="wishlist" />

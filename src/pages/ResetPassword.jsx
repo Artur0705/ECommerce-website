@@ -1,6 +1,7 @@
 import React from "react";
 import BreadCrumb from "../components/BreadCrumb";
 import Container from "../components/Container";
+import CustomInput from "../components/CustomInput";
 import Meta from "../components/Meta";
 
 const ResetPassword = () => {
@@ -19,22 +20,17 @@ const ResetPassword = () => {
                     "
                 className="d-flex flex-column gap-15"
               >
-                <div>
-                  <input
-                    type="password"
-                    name="password"
-                    placeholder="New Password"
-                    className="form-control"
-                  />
-                </div>
-                <div className="mt-1">
-                  <input
-                    type="password"
-                    name="confPassword"
-                    placeholder="Confirm Password"
-                    className="form-control"
-                  />
-                </div>
+                <CustomInput
+                  type="password"
+                  name="password"
+                  placeholder="New Password"
+                />
+                <CustomInput
+                  type="password"
+                  name="confPassword"
+                  placeholder="Confirm Password"
+                />
+
                 <div>
                   <div className="mt-3 d-flex justify-content-center align-items-center gap-15">
                     <button className="button border-0">Submit</button>

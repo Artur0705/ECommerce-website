@@ -1,7 +1,7 @@
 const express = require("express");
 const db = require("./config/connection.js");
 const app = express();
-const dotenv = require("dotenv").config();
+require("dotenv").config();
 const bodyParser = require("body-parser");
 const authRouter = require("./routes/authRoute");
 const { notFound, errorHandler } = require("./middleware/errorHandler.js");

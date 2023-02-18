@@ -1,4 +1,5 @@
-const mongoose = require("mongoose"); // Erase if already required
+const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
 
 // Declare the Schema of the Mongo model
 const userSchema = new mongoose.Schema({
@@ -25,6 +26,15 @@ const userSchema = new mongoose.Schema({
     required: true,
   },
 });
+
+userSchema.pre("save", async function (next) {
+  const salt = await bcrypt.genSalt(10);
+  this.password = await bcrypt.hash(this.password, salt);
+});
+
+userSchema.method.isPasswordMatched = async function (enteredPassword) {
+  return await bcrypt.compare(enteredPassword, this.password);
+};
 
 //Export the model
 module.exports = mongoose.model("User", userSchema);

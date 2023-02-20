@@ -10,7 +10,7 @@ const {
   unblockUser,
   handleRefreshToken,
   logout,
-} = require("../controller/user");
+} = require("../controller/userController");
 const { authMiddleware, isAdmin } = require("../middleware/authMiddleware");
 
 const router = express.Router();

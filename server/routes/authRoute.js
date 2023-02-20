@@ -6,6 +6,8 @@ const {
   getUser,
   deleteUser,
   updateUser,
+  blockUser,
+  unblockUser,
 } = require("../controller/user");
 const { authMiddlware, isAdmin } = require("../middleware/authMiddlware");
 
@@ -17,5 +19,7 @@ router.get("/all-users", getAllUser);
 router.get("/:id", authMiddlware, isAdmin, getUser);
 router.delete("/:id", deleteUser);
 router.put("/edit-user", authMiddlware, updateUser);
+router.put("/block-user/:id", authMiddlware, isAdmin, blockUser);
+router.put("/unblock-user/:id", authMiddlware, isAdmin, unblockUser);
 
 module.exports = router;

@@ -50,4 +50,13 @@ const getAllBlogs = asyncHandler(async (req, res) => {
   }
 });
 
-module.exports = { createBlog, updateBlog, geteBlog, getAllBlogs };
+const deleteBlog = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  try {
+    const deletedBlog = await Blog.findByIdAndDelete(id);
+    res.json(deletedBlog);
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+module.exports = { createBlog, updateBlog, geteBlog, getAllBlogs, deleteBlog };

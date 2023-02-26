@@ -14,6 +14,7 @@ const createBlog = asyncHandler(async (req, res) => {
 
 const updateBlog = asyncHandler(async (req, res) => {
   const { id } = req.params;
+  validateMongoDbId(id);
   try {
     const updateBlog = await Blog.findByIdAndUpdate(id, req.body, {
       new: true,
@@ -26,6 +27,7 @@ const updateBlog = asyncHandler(async (req, res) => {
 
 const geteBlog = asyncHandler(async (req, res) => {
   const { id } = req.params;
+  validateMongoDbId(id);
   try {
     const getBlog = await Blog.findById(id);
     await Blog.findByIdAndUpdate(
@@ -52,6 +54,7 @@ const getAllBlogs = asyncHandler(async (req, res) => {
 
 const deleteBlog = asyncHandler(async (req, res) => {
   const { id } = req.params;
+  validateMongoDbId(id);
   try {
     const deletedBlog = await Blog.findByIdAndDelete(id);
     res.json(deletedBlog);
@@ -59,4 +62,57 @@ const deleteBlog = asyncHandler(async (req, res) => {
     throw new Error(error);
   }
 });
-module.exports = { createBlog, updateBlog, geteBlog, getAllBlogs, deleteBlog };
+
+const likeBlog = asyncHandler(async (req, res) => {
+  const { blogId } = req.body;
+  validateMongoDbId(blogId);
+
+  const blog = await Blog.findById(blogId);
+  const loginUserId = req?.user?._id;
+
+  const isLiked = blog?.isLiked;
+  const alreadyDisliked = blog?.dislikes?.find(
+    (userId) => userId?.toString() === loginUserId?.toString()
+  );
+  if (alreadyDisliked) {
+    const blog = await Blog.findByIdAndUpdate(
+      blogId,
+      {
+        $pull: { dislikes: loginUserId },
+        isDisliked: false,
+      },
+      { new: true }
+    );
+    res.json(blog);
+  }
+  if (isLiked) {
+    const blog = await Blog.findByIdAndUpdate(
+      blogId,
+      {
+        $pull: { likes: loginUserId },
+        isLiked: false,
+      },
+      { new: true }
+    );
+    res.json(blog);
+  } else {
+    const blog = await Blog.findByIdAndUpdate(
+      blogId,
+      {
+        $push: { likes: loginUserId },
+        isLiked: true,
+      },
+      { new: true }
+    );
+    res.json(blog);
+  }
+});
+
+module.exports = {
+  createBlog,
+  updateBlog,
+  geteBlog,
+  getAllBlogs,
+  deleteBlog,
+  likeBlog,
+};

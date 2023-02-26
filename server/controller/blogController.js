@@ -117,7 +117,7 @@ const dislikeBlog = asyncHandler(async (req, res) => {
   const blog = await Blog.findById(blogId);
   const loginUserId = req?.user?._id;
 
-  const isDisLiked = blog?.isDisliked;
+  const isDisliked = blog?.isDisliked;
   const alreadyLiked = blog?.likes?.find(
     (userId) => userId?.toString() === loginUserId?.toString()
   );
@@ -132,7 +132,7 @@ const dislikeBlog = asyncHandler(async (req, res) => {
     );
     res.json(blog);
   }
-  if (isDisLiked) {
+  if (isDisliked) {
     const blog = await Blog.findByIdAndUpdate(
       blogId,
       {

@@ -41,4 +41,13 @@ const geteBlog = asyncHandler(async (req, res) => {
   }
 });
 
-module.exports = { createBlog, updateBlog, geteBlog };
+const getAllBlogs = asyncHandler(async (req, res) => {
+  try {
+    const getBlogs = await Blog.find();
+    res.json(getBlogs);
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
+module.exports = { createBlog, updateBlog, geteBlog, getAllBlogs };

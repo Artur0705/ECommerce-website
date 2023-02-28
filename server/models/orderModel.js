@@ -14,8 +14,8 @@ const orderSchema = new mongoose.Schema(
       type: String,
       default: "Not Processed",
       enum: [
-        "Not Processed",
-        "Online Payments",
+        "Order Confirmed",
+        "Payment Verified",
         "Processing",
         "Dispatched",
         "Cancelled",

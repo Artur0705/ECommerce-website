@@ -427,12 +427,12 @@ const createOrder = asyncHandler(async (req, res) => {
         id: uniqId(),
         method: "Card Payment",
         amount: finalAmout,
-        status: "Processing",
+        status: "Order Confirmed",
         created: Date.now(),
         currency: "AUD",
       },
       orderedBy: user._id,
-      orderStatus: "Online Payments",
+      orderStatus: "Order Confirmed",
     }).save();
     let update = userCart.products.map((item) => {
       return {
@@ -463,6 +463,27 @@ const getOrders = asyncHandler(async (req, res) => {
   }
 });
 
+const updateOrderStatus = asyncHandler(async (req, res) => {
+  const { status } = req.body;
+  const { id } = req.params;
+  validateMongoDbId(id);
+
+  try {
+    const updateOrder = await Order.findByIdAndUpdate(
+      id,
+      {
+        orderStatus: status,
+        paymentIntent: {
+          status: status,
+        },
+      },
+      { new: true }
+    );
+    res.json(updateOrder);
+  } catch (error) {
+    throw new Error(error);
+  }
+});
 module.exports = {
   createUser,
   loginUser,
@@ -486,4 +507,5 @@ module.exports = {
   applyCoupon,
   createOrder,
   getOrders,
+  updateOrderStatus,
 };

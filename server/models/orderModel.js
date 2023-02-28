@@ -15,7 +15,7 @@ const orderSchema = new mongoose.Schema(
       default: "Not Processed",
       enum: [
         "Not Processed",
-        "Payment Received",
+        "Online Payments",
         "Processing",
         "Dispatched",
         "Cancelled",

@@ -2,6 +2,8 @@ const User = require("../models/userModel");
 const Product = require("../models/productModel");
 const Cart = require("../models/cartModel");
 const Coupon = require("../models/couponModel");
+const Order = require("../models/orderModel");
+const uniqId = require("uniqid");
 const asyncHandler = require("express-async-handler");
 const { generateToken } = require("../config/jwtToken");
 const validateMongoDbId = require("../utils/validateMondoDbId");
@@ -404,6 +406,49 @@ const applyCoupon = asyncHandler(async (req, res) => {
   res.json(totalAfterDiscount);
 });
 
+const createOrder = asyncHandler(async (req, res) => {
+  const { cardPayment, couponApplied } = req.body;
+  const { _id } = req.user;
+  validateMongoDbId(_id);
+  try {
+    if (!cardPayment) throw new Error("Createing order has been failed");
+    const user = await User.findById(_id);
+    let userCart = await Cart.findOne({ orderedBy: user._id });
+    let finalAmout = 0;
+    if (couponApplied && userCart.totalAfterDiscount) {
+      finalAmout = userCart.totalAfterDiscount;
+    } else {
+      finalAmout = userCart.cartTotal;
+    }
+
+    let newOrder = await new Order({
+      products: userCart.products,
+      paymentIntent: {
+        id: uniqId(),
+        method: "Card Payment",
+        amount: finalAmout,
+        status: "Processing",
+        created: Date.now(),
+        currency: "AUD",
+      },
+      orderby: user._id,
+      orderStatus: "Online Payments",
+    }).save();
+    let update = userCart.products.map((item) => {
+      return {
+        updateOne: {
+          filter: { _id: item.product._id },
+          update: { $inc: { quantity: -item.count, sold: +item.count } },
+        },
+      };
+    });
+    const updated = await Product.bulkWrite(update, {});
+    res.json({ message: "success" });
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
 module.exports = {
   createUser,
   loginUser,
@@ -425,4 +470,5 @@ module.exports = {
   getUserCart,
   emptyCart,
   applyCoupon,
+  createOrder,
 };

@@ -39,15 +39,12 @@ const blogSchema = new mongoose.Schema(
         ref: "User",
       },
     ],
-    image: {
-      type: String,
-      default:
-        "https://www.emergingedtech.com/wp/wp-content/uploads/2018/04/blogging.jpg",
-    },
+
     author: {
       type: String,
       default: "Admin",
     },
+    images: [],
   },
   {
     toJSON: {

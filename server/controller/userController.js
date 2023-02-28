@@ -431,7 +431,7 @@ const createOrder = asyncHandler(async (req, res) => {
         created: Date.now(),
         currency: "AUD",
       },
-      orderby: user._id,
+      orderedBy: user._id,
       orderStatus: "Online Payments",
     }).save();
     let update = userCart.products.map((item) => {
@@ -444,6 +444,20 @@ const createOrder = asyncHandler(async (req, res) => {
     });
     const updated = await Product.bulkWrite(update, {});
     res.json({ message: "success" });
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
+const getOrders = asyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  validateMongoDbId(_id);
+  try {
+    const userOrders = await Order.findOne({ orderedBy: _id })
+      .populate("products.product")
+      .populate("orderby")
+      .exec();
+    res.json(userOrders);
   } catch (error) {
     throw new Error(error);
   }
@@ -471,4 +485,5 @@ module.exports = {
   emptyCart,
   applyCoupon,
   createOrder,
+  getOrders,
 };

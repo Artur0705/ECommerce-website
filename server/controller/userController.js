@@ -455,7 +455,7 @@ const getOrders = asyncHandler(async (req, res) => {
   try {
     const userOrders = await Order.findOne({ orderedBy: _id })
       .populate("products.product")
-      .populate("orderby")
+      .populate("orderedBy")
       .exec();
     res.json(userOrders);
   } catch (error) {

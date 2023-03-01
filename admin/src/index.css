@@ -62,6 +62,7 @@ body {
 
 main {
   overflow-y: scroll;
+  background-color: transparent !important;
 }
 
 .ant-layout-header h5 {

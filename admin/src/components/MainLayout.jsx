@@ -12,7 +12,7 @@ import { SiBrandfolder } from "react-icons/si";
 import { BiCategoryAlt } from "react-icons/bi";
 import { MdOutlineColorLens } from "react-icons/md";
 import { FaClipboardList, FaMicroblog } from "react-icons/fa";
-import { IoCreateOutline } from "react-icons/io5";
+import { IoCreateOutline, IoNotificationsSharp } from "react-icons/io5";
 import { VscRequestChanges } from "react-icons/vsc";
 import { Layout, Menu, theme } from "antd";
 
@@ -118,7 +118,7 @@ const MainLayout = () => {
               label: "Blogs",
               children: [
                 {
-                  key: "blog",
+                  key: "add-blog",
                   icon: <IoCreateOutline className="fs-4" />,
                   label: "Add Blog",
                 },
@@ -149,6 +149,7 @@ const MainLayout = () => {
       </Sider>
       <Layout className="site-layout">
         <Header
+          className="d-flex justify-content-between ps-1 pe-5"
           style={{
             padding: 0,
             background: colorBgContainer,
@@ -161,6 +162,29 @@ const MainLayout = () => {
               onClick: () => setCollapsed(!collapsed),
             }
           )}
+          <div className="d-flex gap-4 align-items-center">
+            <div className="position-relative">
+              <IoNotificationsSharp className="fs-4" />
+              <span className="badge bg-warning rounded-circle p-1 position-absolute">
+                3
+              </span>
+            </div>
+
+            <div className="d-flex gap-3 align-items-center dropdown">
+              <div>
+                <img
+                  width={32}
+                  height={32}
+                  src="https://media.licdn.com/dms/image/D5603AQF1oO-LOJxT_w/profile-displayphoto-shrink_200_200/0/1664684206755?e=1683158400&v=beta&t=GEJ0Vifg5CXC-FMk8cvHBCVozNkbHk4jHYdzJuVot9I"
+                  alt="adminPic"
+                />
+              </div>
+              <div>
+                <h5 className="mb-0">Artur</h5>
+                <p className="mb-0">artlil420@gmail.com</p>
+              </div>
+            </div>
+          </div>
         </Header>
         <Content
           style={{

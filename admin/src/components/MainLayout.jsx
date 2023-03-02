@@ -118,7 +118,7 @@ const MainLayout = () => {
               label: "Blogs",
               children: [
                 {
-                  key: "add-blog",
+                  key: "blog",
                   icon: <IoCreateOutline className="fs-4" />,
                   label: "Add Blog",
                 },

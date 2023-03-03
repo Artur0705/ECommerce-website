@@ -16,7 +16,7 @@ import { IoCreateOutline, IoNotificationsSharp } from "react-icons/io5";
 import { VscRequestChanges } from "react-icons/vsc";
 import { Layout, Menu, theme } from "antd";
 
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Outlet } from "react-router-dom";
 
 const { Header, Sider, Content } = Layout;
@@ -118,7 +118,7 @@ const MainLayout = () => {
               label: "Blogs",
               children: [
                 {
-                  key: "blog",
+                  key: "add-blog",
                   icon: <IoCreateOutline className="fs-4" />,
                   label: "Add Blog",
                 },
@@ -179,9 +179,35 @@ const MainLayout = () => {
                   alt="adminPic"
                 />
               </div>
-              <div>
+              <div
+                role="button"
+                id="dropdownMenuLink"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
                 <h5 className="mb-0">Artur</h5>
                 <p className="mb-0">artlil420@gmail.com</p>
+              </div>
+              <div className="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                <li>
+                  <Link
+                    className="dropdown-item py-1 mb-1"
+                    style={{ height: "auto", lineHeight: "20px" }}
+                    to="/"
+                  >
+                    View Profle
+                  </Link>
+                </li>
+
+                <li>
+                  <Link
+                    className="dropdown-item py-1 mb-1"
+                    style={{ height: "auto", lineHeight: "20px" }}
+                    to="/"
+                  >
+                    Log Out
+                  </Link>
+                </li>
               </div>
             </div>
           </div>

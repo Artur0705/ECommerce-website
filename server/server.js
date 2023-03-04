@@ -16,8 +16,10 @@ const { notFound, errorHandler } = require("./middleware/errorHandler.js");
 const cookieParser = require("cookie-parser");
 const PORT = process.env.PORT || 8000;
 const morgan = require("morgan");
+const cors = require("cors");
 
 app.use(morgan("dev"));
+app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cookieParser());

@@ -9,15 +9,15 @@ const initialState = {
   user: getUserFromLocalStorage,
   isError: false,
   isLoading: false,
-  isSuccess: null,
+  isSuccess: false,
   message: "",
 };
 
 export const login = createAsyncThunk(
   "auth/admin-login",
-  async (user, thunkApi) => {
+  async (userData, thunkApi) => {
     try {
-      return await authService.login(user);
+      return await authService.login(userData);
     } catch (error) {
       return thunkApi.rejectWithValue(error);
     }

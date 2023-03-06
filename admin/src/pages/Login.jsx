@@ -6,38 +6,37 @@ import * as Yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
 import { login } from "../features/auth/authSlice";
 
+let schema = Yup.object().shape({
+  email: Yup.string()
+    .email("Email should be valid")
+    .required("Email is Required"),
+  password: Yup.string().required("Password is Required"),
+});
 const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  let userSchema = Yup.object().shape({
-    email: Yup.string()
-      .email("Email should be valid")
-      .required("Email is required"),
-    password: Yup.string().required("Password is required"),
-  });
-
   const formik = useFormik({
     initialValues: {
       email: "",
       password: "",
     },
-    validationSchema: userSchema,
+    validationSchema: schema,
     onSubmit: (values) => {
       dispatch(login(values));
-      alert(JSON.stringify(values, null, 2));
     },
   });
 
-  const { user, isLoading, isError, isSuccess, message } = useSelector(
-    (state) => state.auth
-  );
+  const authState = useSelector((state) => state);
+
+  const { user, isError, isSuccess, isLoading, message } = authState.auth;
+
   useEffect(() => {
-    if (!user === null || isSuccess) {
+    if (isSuccess) {
       navigate("admin");
     } else {
-      alert("error");
+      navigate("");
     }
-  }, [user, isLoading, isError, isSuccess, message]);
+  }, [user, isError, isSuccess, isLoading]);
 
   return (
     <div className="py-5" style={{ background: "#ffd333", minHeight: "100vh" }}>
@@ -48,37 +47,38 @@ const Login = () => {
       <br />
       <div className="my-5 w-25 bg-white rounded-3 mx-auto p-4">
         <h3 className="text-center title">Login</h3>
-        <p className="text-center">Login to your account to continue</p>
+        <p className="text-center">Login to your account to continue.</p>
+        <div className="error text-center">
+          {message.message === "Rejected" ? "You are not an Admin" : ""}
+        </div>
         <form action="" onSubmit={formik.handleSubmit}>
           <CustomInput
             type="text"
-            name="email"
             label="Email Address"
             id="email"
-            val={formik.values.email}
-            onCh={formik.handleChange("email")}
+            name="email"
+            onChng={formik.handleChange("email")}
+            onBlr={formik.handleBlur("email")}
+            value={formik.values.email}
           />
-          <div className="error">
-            {formik.touched.email && formik.errors.email ? (
-              <div>{formik.errors.email}</div>
-            ) : null}
+          <div className="error mt-2">
+            {formik.touched.email && formik.errors.email}
           </div>
           <CustomInput
             type="password"
-            name="password"
             label="Password"
             id="pass"
-            val={formik.values.password}
-            onCh={formik.handleChange("password")}
+            name="password"
+            onChng={formik.handleChange("password")}
+            onBlr={formik.handleBlur("password")}
+            value={formik.values.password}
           />
-          <div className="error">
-            {formik.touched.password && formik.errors.password ? (
-              <div>{formik.errors.password}</div>
-            ) : null}
+          <div className="error mt-2">
+            {formik.touched.password && formik.errors.password}
           </div>
           <div className="mb-3 text-end">
-            <Link to="/forgot-password" className=" text-secondary">
-              Forgot Password
+            <Link to="forgot-password" className="text-secondary">
+              Forgot Password?
             </Link>
           </div>
           <button

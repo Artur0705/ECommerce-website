@@ -1,40 +1,58 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Table } from "antd";
+import { useDispatch, useSelector } from "react-redux";
+import { getBrands } from "../features/brand/brandSlice";
+import { Link } from "react-router-dom";
+import { BiEdit } from "react-icons/bi";
+import { TiDeleteOutline } from "react-icons/ti";
 
 const columns = [
   {
-    title: "Order No.",
+    title: "Number",
     dataIndex: "key",
   },
   {
-    title: "Name",
-    dataIndex: "name",
+    title: "Title",
+    dataIndex: "title",
+    sorter: (a, b) => a.title.length - b.title.length,
   },
   {
-    title: "Product",
-    dataIndex: "product",
-  },
-  {
-    title: "Status",
-    dataIndex: "status",
+    title: "Actions",
+    dataIndex: "action",
   },
 ];
-const data1 = [];
-for (let i = 0; i < 46; i++) {
-  data1.push({
-    key: i,
-    name: `Edward King ${i}`,
-    product: 32,
-    status: `London, Park Lane no. ${i}`,
-  });
-}
 
 const BrandList = () => {
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(getBrands());
+    // eslint-disable-next-line
+  }, []);
+  const brandState = useSelector((state) => state.brand.brands);
+
+  const data = [];
+  for (let i = 0; i < brandState.length; i++) {
+    data.push({
+      key: i + 1,
+      title: brandState[i].title,
+      action: (
+        <>
+          <Link to="/" className="text-success fs-3">
+            <BiEdit />
+          </Link>
+
+          <Link to="/" className="ms-3 text-danger fs-3">
+            <TiDeleteOutline />
+          </Link>
+        </>
+      ),
+    });
+  }
   return (
     <div>
       <h3 className="mb-4 title">Brands</h3>
       <div>
-        <Table columns={columns} dataSource={data1} />
+        <Table columns={columns} dataSource={data} />
       </div>
     </div>
   );

@@ -52,9 +52,9 @@ const ProductList = () => {
     // eslint-disable-next-line
   }, []);
   const productState = useSelector((state) => state.product.products);
-  const data1 = [];
+  const data = [];
   for (let i = 0; i < productState.length; i++) {
-    data1.push({
+    data.push({
       key: i + 1,
       title: productState[i].title,
       brand: productState[i].brand,
@@ -67,7 +67,7 @@ const ProductList = () => {
           <Link to="/" className="text-success fs-3">
             <BiEdit />
           </Link>
-          ,
+
           <Link to="/" className="ms-3 text-danger fs-3">
             <TiDeleteOutline />
           </Link>
@@ -79,7 +79,7 @@ const ProductList = () => {
     <div>
       <h3 className="mb-4 title">Products</h3>
       <div>
-        <Table columns={columns} dataSource={data1} />
+        <Table columns={columns} dataSource={data} />
       </div>
     </div>
   );

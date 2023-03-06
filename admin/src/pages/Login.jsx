@@ -36,6 +36,7 @@ const Login = () => {
     } else {
       navigate("");
     }
+    // eslint-disable-next-line
   }, [user, isError, isSuccess, isLoading]);
 
   return (

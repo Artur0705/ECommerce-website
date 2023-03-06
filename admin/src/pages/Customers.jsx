@@ -27,6 +27,7 @@ const Customers = () => {
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(getUsers());
+    // eslint-disable-next-line
   }, []);
 
   const customerState = useSelector((state) => state.customer.customers);

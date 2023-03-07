@@ -40,7 +40,7 @@ const columns = [
     sorter: (a, b) => a.price - b.price,
   },
   {
-    title: "Actions",
+    title: "Action",
     dataIndex: "action",
   },
 ];

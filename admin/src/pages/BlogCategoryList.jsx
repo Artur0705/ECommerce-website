@@ -1,40 +1,59 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Table } from "antd";
+import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
+import { BiEdit } from "react-icons/bi";
+import { TiDeleteOutline } from "react-icons/ti";
+import { getBlogCategories } from "../features/blogCategory/blogCategorySlice";
 
 const columns = [
   {
-    title: "Order No.",
+    title: "Number",
     dataIndex: "key",
   },
   {
-    title: "Name",
-    dataIndex: "name",
+    title: "Title",
+    dataIndex: "title",
+    sorter: (a, b) => a.title.length - b.title.length,
   },
   {
-    title: "Product",
-    dataIndex: "product",
-  },
-  {
-    title: "Status",
-    dataIndex: "status",
+    title: "Action",
+    dataIndex: "action",
   },
 ];
-const data1 = [];
-for (let i = 0; i < 46; i++) {
-  data1.push({
-    key: i,
-    name: `Edward King ${i}`,
-    product: 32,
-    status: `London, Park Lane no. ${i}`,
-  });
-}
 
 const BlogCategoryList = () => {
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(getBlogCategories());
+    // eslint-disable-next-line
+  }, []);
+  const blogCategoryState = useSelector(
+    (state) => state.blogCategory.blogCategories
+  );
+  const data = [];
+  for (let i = 0; i < blogCategoryState.length; i++) {
+    data.push({
+      key: i + 1,
+      title: blogCategoryState[i].title,
+      action: (
+        <>
+          <Link to="/" className="text-success fs-3">
+            <BiEdit />
+          </Link>
+
+          <Link to="/" className="ms-3 text-danger fs-3">
+            <TiDeleteOutline />
+          </Link>
+        </>
+      ),
+    });
+  }
   return (
     <div>
       <h3 className="mb-4 title">Blog Categories</h3>
       <div>
-        <Table columns={columns} dataSource={data1} />
+        <Table columns={columns} dataSource={data} />
       </div>
     </div>
   );

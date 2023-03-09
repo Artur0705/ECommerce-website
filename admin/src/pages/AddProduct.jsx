@@ -6,6 +6,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import Multiselect from "react-widgets/Multiselect";
 import "react-widgets/styles.css";
+import Dropzone from "react-dropzone";
 
 import { useDispatch, useSelector } from "react-redux";
 import { getBrands } from "../features/brand/brandSlice";
@@ -108,8 +109,8 @@ const AddProduct = () => {
           </div>
           <select
             name="brand"
-            onChng={formik.handleChange("brand")}
-            onBLr={formik.handleBlur("brand")}
+            onChange={formik.handleChange("brand")}
+            onBlur={formik.handleBlur("brand")}
             val={formik.values.brand}
             className="form-control py-3 mb-3"
             id=""
@@ -128,8 +129,8 @@ const AddProduct = () => {
           </div>
           <select
             name="category"
-            onChng={formik.handleChange("category")}
-            onBLr={formik.handleBlur("category")}
+            onChange={formik.handleChange("category")}
+            onBlur={formik.handleBlur("category")}
             val={formik.values.category}
             className="form-control py-3 mb-3"
             id=""
@@ -150,7 +151,6 @@ const AddProduct = () => {
             name="color"
             placeholder="Select The Colors"
             dataKey="id"
-            onChange={(e) => setColor(e)}
             textField="color"
             data={colors}
           />
@@ -164,6 +164,20 @@ const AddProduct = () => {
           />
           <div className="error">
             {formik.touched.quantity && formik.errors.quantity}
+          </div>
+          <div className="bg-white border-1 p-5 text-center">
+            <Dropzone onDrop={(acceptedFiles) => console.log(acceptedFiles)}>
+              {({ getRootProps, getInputProps }) => (
+                <section>
+                  <div {...getRootProps()}>
+                    <input {...getInputProps()} />
+                    <p>
+                      Drag 'n' drop some files here, or click to select files
+                    </p>
+                  </div>
+                </section>
+              )}
+            </Dropzone>
           </div>
 
           <button

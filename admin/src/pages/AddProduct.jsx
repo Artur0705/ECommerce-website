@@ -12,6 +12,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getBrands } from "../features/brand/brandSlice";
 import { getCategories } from "../features/prodCategory/prodCategorySlice";
 import { getColors } from "../features/color/colorSlice";
+import { deleteImg, uploadImg } from "../features/upload/uploadSlice";
 
 let schema = Yup.object().shape({
   title: Yup.string().required("Title is Required"),
@@ -30,15 +31,19 @@ const AddProduct = () => {
     dispatch(getBrands());
     dispatch(getCategories());
     dispatch(getColors());
-    formik.values.color = color;
     // eslint-disable-next-line
   }, []);
 
+  useEffect(() => {
+    formik.values.color = color;
+    // eslint-disable-next-line
+  }, [color]);
   const brandState = useSelector((state) => state.brand.brands);
   const prodCategoryState = useSelector(
     (state) => state.prodCategory.prodCategories
   );
   const colorState = useSelector((state) => state.color.colors);
+  const imgState = useSelector((state) => state.upload.images);
 
   const colors = [];
   colorState.forEach((i) => {
@@ -153,6 +158,7 @@ const AddProduct = () => {
             dataKey="id"
             textField="color"
             data={colors}
+            onChange={(e) => setColor(e)}
           />
           <CustomInput
             type="number"
@@ -166,7 +172,9 @@ const AddProduct = () => {
             {formik.touched.quantity && formik.errors.quantity}
           </div>
           <div className="bg-white border-1 p-5 text-center">
-            <Dropzone onDrop={(acceptedFiles) => console.log(acceptedFiles)}>
+            <Dropzone
+              onDrop={(acceptedFiles) => dispatch(uploadImg(acceptedFiles))}
+            >
               {({ getRootProps, getInputProps }) => (
                 <section>
                   <div {...getRootProps()}>
@@ -179,7 +187,26 @@ const AddProduct = () => {
               )}
             </Dropzone>
           </div>
-
+          <div className="showimages d-flex flex-wrap gap-3">
+            {imgState.map((item, j) => {
+              return (
+                <div className="position-relative" key={j}>
+                  <button
+                    type="button"
+                    onClick={() => dispatch(deleteImg(item.public_id))}
+                    className="btn-close position-absolute"
+                    style={{ top: "510x", right: "10px" }}
+                  ></button>
+                  <img
+                    src={item.url}
+                    alt="productImg"
+                    width={200}
+                    height={200}
+                  />
+                </div>
+              );
+            })}
+          </div>
           <button
             className="btn btn-success border-0 rounded-3 my-5"
             type="submit"

@@ -13,6 +13,7 @@ import { getBrands } from "../features/brand/brandSlice";
 import { getCategories } from "../features/prodCategory/prodCategorySlice";
 import { getColors } from "../features/color/colorSlice";
 import { deleteImg, uploadImg } from "../features/upload/uploadSlice";
+import { createProducts } from "../features/product/productSlice";
 
 let schema = Yup.object().shape({
   title: Yup.string().required("Title is Required"),
@@ -34,10 +35,6 @@ const AddProduct = () => {
     // eslint-disable-next-line
   }, []);
 
-  useEffect(() => {
-    formik.values.color = color;
-    // eslint-disable-next-line
-  }, [color]);
   const brandState = useSelector((state) => state.brand.brands);
   const prodCategoryState = useSelector(
     (state) => state.prodCategory.prodCategories
@@ -53,6 +50,20 @@ const AddProduct = () => {
     });
   });
 
+  const img = [];
+  imgState.forEach((i) => {
+    img.push({
+      public_id: i.public_id,
+      url: i.url,
+    });
+  });
+
+  useEffect(() => {
+    formik.values.color = color;
+    formik.values.images = img;
+    // eslint-disable-next-line
+  }, [color, img]);
+
   const formik = useFormik({
     initialValues: {
       title: "",
@@ -62,10 +73,11 @@ const AddProduct = () => {
       category: "",
       color: "",
       quantity: "",
+      images: "",
     },
     validationSchema: schema,
     onSubmit: (values) => {
-      alert(JSON.stringify(values));
+      dispatch(createProducts(values));
     },
   });
 

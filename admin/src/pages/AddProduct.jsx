@@ -32,7 +32,6 @@ const AddProduct = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [color, setColor] = useState([]);
-  console.log(color);
 
   useEffect(() => {
     dispatch(getBrands());
@@ -46,7 +45,6 @@ const AddProduct = () => {
     (state) => state.prodCategory.prodCategories
   );
   const colorState = useSelector((state) => state.color.colors);
-  console.log(colorState);
   const imgState = useSelector((state) => state.upload.images);
   const newProduct = useSelector((state) => state.product);
   const { isSuccess, isError, isLoading, createdProduct } = newProduct;
@@ -105,7 +103,6 @@ const AddProduct = () => {
   });
   const handleColors = (e) => {
     setColor(e);
-    console.log(color);
   };
   return (
     <div>

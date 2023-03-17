@@ -14,6 +14,7 @@ import { BiCategoryAlt } from "react-icons/bi";
 import { MdOutlineColorLens } from "react-icons/md";
 import { FaClipboardList, FaMicroblog } from "react-icons/fa";
 import { IoCreateOutline, IoNotificationsSharp } from "react-icons/io5";
+import { RiCouponLine } from "react-icons/ri";
 import { VscRequestChanges } from "react-icons/vsc";
 import { Layout, Menu, theme } from "antd";
 
@@ -32,7 +33,7 @@ const MainLayout = () => {
   const navigate = useNavigate();
 
   return (
-    <Layout>
+    <Layout onContextMenu={(e) => e.preventDefault()}>
       <Sider trigger={null} collapsible collapsed={collapsed}>
         <div className="logo">
           <h2 className="text-white fs-5 text-center py-3 mb-0">
@@ -112,6 +113,23 @@ const MainLayout = () => {
               key: "orders",
               icon: <FaClipboardList className="fs-4" />,
               label: "Orders",
+            },
+            {
+              key: "marketing",
+              icon: <RiCouponLine className="fs-4" />,
+              label: "Marketing",
+              children: [
+                {
+                  key: "coupon",
+                  icon: <IoCreateOutline className="fs-4" />,
+                  label: "Add Coupon",
+                },
+                {
+                  key: "coupon-list",
+                  icon: <AiOutlineUnorderedList className="fs-4" />,
+                  label: "Coupon List",
+                },
+              ],
             },
             {
               key: "blog",

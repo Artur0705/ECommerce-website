@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { Table } from "antd";
 import { useDispatch, useSelector } from "react-redux";
-import { getBrands } from "../features/brand/brandSlice";
+import { getBrands, resetState } from "../features/brand/brandSlice";
 import { Link } from "react-router-dom";
 import { BiEdit } from "react-icons/bi";
 import { TiDeleteOutline } from "react-icons/ti";
@@ -26,6 +26,7 @@ const BrandList = () => {
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(getBrands());
+    dispatch(resetState());
     // eslint-disable-next-line
   }, []);
   const brandState = useSelector((state) => state.brand.brands);
@@ -37,7 +38,10 @@ const BrandList = () => {
       title: brandState[i].title,
       action: (
         <>
-          <Link to="/" className="text-success fs-3">
+          <Link
+            to={`/admin/brand/${brandState[i]._id}`}
+            className="text-success fs-3"
+          >
             <BiEdit />
           </Link>
 

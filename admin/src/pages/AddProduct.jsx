@@ -12,7 +12,7 @@ import { getBrands } from "../features/brand/brandSlice";
 import { getCategories } from "../features/prodCategory/prodCategorySlice";
 import { getColors } from "../features/color/colorSlice";
 import { deleteImg, uploadImg } from "../features/upload/uploadSlice";
-import { createProducts } from "../features/product/productSlice";
+import { createProducts, resetState } from "../features/product/productSlice";
 import { toast } from "react-toastify";
 
 let schema = Yup.object().shape({
@@ -97,6 +97,7 @@ const AddProduct = () => {
       formik.resetForm();
       setColor(null);
       setTimeout(() => {
+        dispatch(resetState());
         navigate("/admin/product-list");
       }, 3000);
     },

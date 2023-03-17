@@ -11,7 +11,10 @@ import { useFormik } from "formik";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { createBlog } from "../features/blog/blogSlice";
-import { getBlogCategories } from "../features/blogCategory/blogCategorySlice";
+import {
+  getBlogCategories,
+  resetState,
+} from "../features/blogCategory/blogCategorySlice";
 
 let schema = Yup.object().shape({
   title: Yup.string().required("Blog Title is Required"),
@@ -69,6 +72,7 @@ const AddBlog = () => {
       dispatch(createBlog(values));
       formik.resetForm();
       setTimeout(() => {
+        dispatch(resetState());
         navigate("/admin/blog-list");
       }, 3000);
     },

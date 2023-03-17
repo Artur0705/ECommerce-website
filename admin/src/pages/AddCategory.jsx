@@ -5,7 +5,10 @@ import { toast } from "react-toastify";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import CustomInput from "../components/CustomInput";
-import { createProdCategory } from "../features/prodCategory/prodCategorySlice";
+import {
+  createProdCategory,
+  resetState,
+} from "../features/prodCategory/prodCategorySlice";
 
 let schema = Yup.object().shape({
   title: Yup.string().required("Category Name is Required"),
@@ -35,6 +38,7 @@ const AddCategory = () => {
       dispatch(createProdCategory(values));
       formik.resetForm();
       setTimeout(() => {
+        dispatch(resetState());
         navigate("/admin/category-list");
       }, 3000);
     },

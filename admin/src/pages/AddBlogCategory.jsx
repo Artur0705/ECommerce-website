@@ -5,7 +5,10 @@ import { toast } from "react-toastify";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import CustomInput from "../components/CustomInput";
-import { createBlogCategory } from "../features/blogCategory/blogCategorySlice";
+import {
+  createBlogCategory,
+  resetState,
+} from "../features/blogCategory/blogCategorySlice";
 
 let schema = Yup.object().shape({
   title: Yup.string().required("Blog Category Name is Required"),
@@ -36,6 +39,7 @@ const AddBlogCategory = () => {
       dispatch(createBlogCategory(values));
       formik.resetForm();
       setTimeout(() => {
+        dispatch(resetState());
         navigate("/admin/blog-category-list");
       }, 3000);
     },

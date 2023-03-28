@@ -1,10 +1,15 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Table } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { BiEdit } from "react-icons/bi";
 import { TiDeleteOutline } from "react-icons/ti";
-import { getColors } from "../features/color/colorSlice";
+import {
+  deleteColor,
+  getColors,
+  resetState,
+} from "../features/color/colorSlice";
+import CustomModal from "../components/CustomModal";
 
 const columns = [
   {
@@ -23,9 +28,21 @@ const columns = [
 ];
 
 const ColorList = () => {
+  const [open, setOpen] = useState(false);
+  const [colorId, setColorId] = useState("");
+
+  const showModal = (e) => {
+    setOpen(true);
+    setColorId(e);
+  };
+  const hideModal = () => {
+    setOpen(false);
+  };
+
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(getColors());
+    dispatch(resetState());
     // eslint-disable-next-line
   }, []);
 
@@ -38,17 +55,32 @@ const ColorList = () => {
       title: colorState[i].title,
       action: (
         <>
-          <Link to="/" className="text-success fs-3">
+          <Link
+            to={`/admin/color/${colorState[i]._id}`}
+            className="text-success fs-3"
+          >
             <BiEdit />
           </Link>
 
-          <Link to="/" className="ms-3 text-danger fs-3">
+          <button
+            to="/"
+            className="ms-3 text-danger fs-3 bg-transparent border-0"
+            onClick={() => showModal(colorState[i]._id)}
+          >
             <TiDeleteOutline />
-          </Link>
+          </button>
         </>
       ),
     });
   }
+
+  const deleteAColor = (e) => {
+    dispatch(deleteColor(e));
+    setOpen(false);
+    setTimeout(() => {
+      dispatch(getColors());
+    }, 100);
+  };
 
   return (
     <div>
@@ -56,6 +88,14 @@ const ColorList = () => {
       <div>
         <Table columns={columns} dataSource={data} />
       </div>
+      <CustomModal
+        hideModal={hideModal}
+        open={open}
+        performAction={() => {
+          deleteAColor(colorId);
+        }}
+        title="Are you sure you want to delete the Color?"
+      />
     </div>
   );
 };

@@ -60,7 +60,7 @@ const Login = () => {
             name="email"
             onChng={formik.handleChange("email")}
             onBlr={formik.handleBlur("email")}
-            value={formik.values.email}
+            val={formik.values.email}
           />
           <div className="error mt-2">
             {formik.touched.email && formik.errors.email}
@@ -72,7 +72,7 @@ const Login = () => {
             name="password"
             onChng={formik.handleChange("password")}
             onBlr={formik.handleBlur("password")}
-            value={formik.values.password}
+            val={formik.values.password}
           />
           <div className="error mt-2">
             {formik.touched.password && formik.errors.password}

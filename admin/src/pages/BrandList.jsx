@@ -62,7 +62,6 @@ const BrandList = () => {
           </Link>
 
           <button
-            to="/"
             className="ms-3 text-danger fs-3 bg-transparent border-0"
             onClick={() => showModal(brandState[i]._id)}
           >

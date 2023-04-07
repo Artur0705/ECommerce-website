@@ -54,7 +54,10 @@ const Orders = () => {
         " " +
         orderState[i].orderedBy.lastName,
       product: (
-        <Link to={`/admin/orders/${orderState[i].orderedBy._id}`}>
+        <Link
+          to={`/admin/orders/${orderState[i].orderedBy._id}`}
+          className="text-secondary"
+        >
           View Orders
         </Link>
       ),

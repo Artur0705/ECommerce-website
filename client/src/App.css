@@ -905,3 +905,8 @@ span {
 }
 
 /* Shipping Page End */
+
+.error {
+  color: red;
+  font-size: 12px;
+}

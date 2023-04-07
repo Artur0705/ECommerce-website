@@ -37,18 +37,21 @@ app.use("/api/color", colorRouter);
 app.use("/api/enquiry", enquiryRouter);
 app.use("/api/upload", uploadRouter);
 
-app.use(notFound);
-app.use(errorHandler);
-
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "../client/build")));
+  app.use(express.static(path.join(__dirname, "../admin/build")));
 }
 
-app.use(express.static(path.join(__dirname, "/../client/build")));
+app.get("/admin", (req, res) => {
+  res.sendFile(path.join(`${__dirname}/../admin/build/index.html`));
+});
 
 app.get("*", (req, res) => {
   res.sendFile(path.join(`${__dirname}/../client/build/index.html`));
 });
+
+app.use(notFound);
+app.use(errorHandler);
 
 db.once("open", () => {
   app.listen(PORT, () => {

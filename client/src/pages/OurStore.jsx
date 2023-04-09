@@ -11,7 +11,7 @@ import { getAllProducts } from "../features/products/productSlice";
 const OurStore = () => {
   const [grid, setGrid] = useState(4);
   const dispatch = useDispatch();
-  const productState = useSelector((state) => state.product.product);
+  const productState = useSelector((state) => state?.product?.product);
 
   useEffect(
     () => {
@@ -254,7 +254,10 @@ const OurStore = () => {
             </div>
             <div className="products-list pb-5">
               <div className="d-flex gap-10 flex-wrap">
-                <ProductCard data={productState} grid={grid} />
+                <ProductCard
+                  data={productState ? productState : []}
+                  grid={grid}
+                />
               </div>
             </div>
           </div>

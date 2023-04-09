@@ -11,6 +11,7 @@ const BlogCard = (props) => {
           src={image ? image : blog1}
           className="img-fluid w-100"
           alt="blog"
+          style={{ height: "300px", width: "300px" }}
         />
       </div>
       <div className="blog-content">
@@ -19,7 +20,7 @@ const BlogCard = (props) => {
         <p
           className="desc"
           dangerouslySetInnerHTML={{
-            __html: description?.substr(0, 70) + "...",
+            __html: description?.substr(0, 30) + "...",
           }}
         ></p>
         <Link to={"/blog/" + id} className="button">

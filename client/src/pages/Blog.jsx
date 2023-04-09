@@ -43,21 +43,22 @@ const Blog = () => {
           </div>
           <div className="col-9">
             <div className="row">
-              {blogState?.map((item, index) => {
-                return (
-                  <div className="col-6 mb-3" key={index}>
-                    <BlogCard
-                      id={item?._id}
-                      title={item?.title}
-                      description={item?.description}
-                      date={moment(item?.createdAt).format(
-                        "MMMM Do YYYY, h:mm a"
-                      )}
-                      image={item?.images[0]?.url}
-                    />
-                  </div>
-                );
-              })}
+              {blogState &&
+                blogState?.map((item, index) => {
+                  return (
+                    <div className="col-6 mb-3" key={index}>
+                      <BlogCard
+                        id={item?._id}
+                        title={item?.title}
+                        description={item?.description}
+                        date={moment(item?.createdAt).format(
+                          "MMMM Do YYYY, h:mm a"
+                        )}
+                        image={item?.images[0]?.url}
+                      />
+                    </div>
+                  );
+                })}
             </div>
           </div>
         </div>

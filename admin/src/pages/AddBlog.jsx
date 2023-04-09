@@ -87,7 +87,7 @@ const AddBlog = () => {
   useEffect(() => {
     formik.values.images = img;
     // eslint-disable-next-line
-  }, []);
+  }, [blogImages]);
 
   const formik = useFormik({
     enableReinitialize: true,
@@ -95,7 +95,7 @@ const AddBlog = () => {
       title: blogName || "",
       description: blogDescription || "",
       category: blogCategory || "",
-      images: "",
+      images: img || "",
     },
     validationSchema: schema,
     onSubmit: (values) => {

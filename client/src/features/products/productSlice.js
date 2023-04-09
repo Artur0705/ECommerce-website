@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { productService } from "./productService";
+import { toast } from "react-toastify";
 
 export const getAllProducts = createAsyncThunk(
   "product/get",
@@ -12,11 +13,11 @@ export const getAllProducts = createAsyncThunk(
   }
 );
 
-export const addToWishlist = createAsyncThunk(
+export const addToWishList = createAsyncThunk(
   "product/wishlist",
   async (prodId, thunkAPI) => {
     try {
-      return await productService.addToWishlist(prodId);
+      return await productService.addToWishList(prodId);
     } catch (error) {
       return thunkAPI.rejectWithValue(error);
     }
@@ -52,21 +53,24 @@ export const productSlice = createSlice({
         state.isSuccess = false;
         state.message = action.error;
       })
-      .addCase(addToWishlist.pending, (state) => {
+      .addCase(addToWishList.pending, (state) => {
         state.isLoading = true;
       })
-      .addCase(addToWishlist.fulfilled, (state, action) => {
+      .addCase(addToWishList.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isError = false;
         state.isSuccess = true;
-        state.addToWishlist = action.payload;
+        state.addToWishList = action.payload;
         state.message = "Product Added to Wishlist";
       })
-      .addCase(addToWishlist.rejected, (state, action) => {
+      .addCase(addToWishList.rejected, (state, action) => {
         state.isError = true;
         state.isLoading = false;
         state.isSuccess = false;
         state.message = action.error;
+        if (state.isError === true) {
+          toast.error("Something Went Wrong ");
+        }
       });
   },
 });

@@ -8,7 +8,7 @@ const getProducts = async () => {
   }
 };
 
-const addToWishlist = async (prodId) => {
+const addToWishList = async (prodId) => {
   const response = await axios.put(
     `${base_url}product/wishlist`,
     { prodId },
@@ -21,5 +21,5 @@ const addToWishlist = async (prodId) => {
 
 export const productService = {
   getProducts,
-  addToWishlist,
+  addToWishList,
 };

@@ -1,20 +1,56 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import ReactStars from "react-rating-stars-component";
 import { Link, useLocation } from "react-router-dom";
 import prodcompare from "../images/prodcompare.svg";
-import wish from "../images/wish.svg";
 import addcart from "../images/add-cart.svg";
 import view from "../images/view.svg";
 import { useDispatch } from "react-redux";
-import { addToWishlist } from "../features/products/productSlice";
+import { addToWishList } from "../features/products/productSlice";
+import { toast } from "react-toastify";
+import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 
 const ProductCard = (props) => {
   const { grid, data } = props;
   const dispatch = useDispatch();
   const location = useLocation();
+  const [isWishlist, setIsWishlist] = useState(() => {
+    const wishlistData = JSON.parse(localStorage.getItem("wishlist")) || {};
+    return data?.reduce((acc, item) => {
+      acc[item._id] = wishlistData[item._id] ?? false;
+      return acc;
+    }, {});
+  });
+
   const addToWish = (id) => {
-    dispatch(addToWishlist(id));
+    dispatch(addToWishList(id));
+    setIsWishlist({ ...isWishlist, [id]: true });
+    toast.success("Product Added To Wishlist");
+    localStorage.setItem(
+      "wishlist",
+      JSON.stringify({ ...isWishlist, [id]: true })
+    );
   };
+
+  const removeFromWish = (id) => {
+    dispatch(addToWishList(id));
+    setIsWishlist({ ...isWishlist, [id]: false });
+    toast.info("The Product Has Been Removed From Wishlist");
+    localStorage.setItem(
+      "wishlist",
+      JSON.stringify({ ...isWishlist, [id]: false })
+    );
+  };
+
+  useEffect(() => {
+    const wishlistData = JSON.parse(localStorage.getItem("wishlist")) || {};
+    setIsWishlist(
+      data?.reduce((acc, item) => {
+        acc[item._id] = wishlistData[item._id] ?? false;
+        return acc;
+      }, {})
+    );
+  }, [data]);
+
   return (
     <>
       {data?.map((item, index) => {
@@ -30,10 +66,18 @@ const ProductCard = (props) => {
                 <button
                   className="border-0 bg-transparent"
                   onClick={() => {
-                    addToWish(item?._id);
+                    if (isWishlist[item._id]) {
+                      removeFromWish(item._id);
+                    } else {
+                      addToWish(item._id);
+                    }
                   }}
                 >
-                  <img src={wish} alt="wishlist" />
+                  {isWishlist[item._id] ? (
+                    <AiFillHeart className="fs-6 text-danger" />
+                  ) : (
+                    <AiOutlineHeart className="fs-6 " />
+                  )}
                 </button>
               </div>
               <Link

@@ -294,6 +294,7 @@ const Home = () => {
                     price={item?.price}
                     sold={item?.sold}
                     quantity={item?.quantity}
+                    image={item?.images[0]?.url}
                   />
                 );
               }

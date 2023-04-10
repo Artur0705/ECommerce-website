@@ -4,13 +4,18 @@ import { Link } from "react-router-dom";
 import watch from "../images/watch.jpg";
 
 const SpecialProduct = (props) => {
-  const { title, brand, totalRating, price, sold, quantity } = props;
+  const { title, brand, totalRating, price, sold, quantity, image } = props;
   return (
     <div className="col-6 mb-3">
       <div className="special-product-card">
         <div className="d-flex justify-content-between">
           <div>
-            <img src={watch} alt="watch" className="img-fluid" />
+            <img
+              src={image}
+              className="img-fluid  mx-auto "
+              alt="product"
+              style={{ height: "300px", width: "300px" }}
+            />
           </div>
           <div className="special-product-content">
             <h5 className="brand">{brand}</h5>

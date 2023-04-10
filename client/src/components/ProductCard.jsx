@@ -92,9 +92,9 @@ const ProductCard = (props) => {
               >
                 <img
                   src={item?.images[0]?.url}
-                  className="img-fluid  mx-auto"
+                  className="img-fluid  mx-auto w-100"
                   alt="product"
-                  width={300}
+                  style={{ height: "300px", width: "300px" }}
                 />
                 <img
                   src={item?.images[1]?.url}

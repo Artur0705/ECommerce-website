@@ -10,14 +10,18 @@ import { services } from "../utils/Data";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllBlogs } from "../features/blogs/blogSlice";
 import moment from "moment";
+import { getAllProducts } from "../features/products/productSlice";
 
 const Home = () => {
   const dispatch = useDispatch();
   const blogState = useSelector((state) => state?.blog?.blog);
+  const productState = useSelector((state) => state?.product?.product);
+  console.log(productState);
 
   useEffect(
     () => {
       getBlogs();
+      getProducts();
     }, // eslint-disable-next-line
     []
   );
@@ -26,6 +30,9 @@ const Home = () => {
     dispatch(getAllBlogs());
   };
 
+  const getProducts = () => {
+    dispatch(getAllProducts());
+  };
   return (
     <>
       <Meta title={"Home"} />
@@ -275,10 +282,22 @@ const Home = () => {
           </div>
         </div>
         <div className="row">
-          <SpecialProduct />
-          <SpecialProduct />
-          <SpecialProduct />
-          <SpecialProduct />
+          {productState &&
+            productState?.map((item, index) => {
+              if (item?.tags === "special") {
+                return (
+                  <SpecialProduct
+                    key={index}
+                    title={item?.title}
+                    brand={item?.brand}
+                    totalRating={item?.totalRating.toString()}
+                    price={item?.price}
+                    sold={item?.sold}
+                    quantity={item?.quantity}
+                  />
+                );
+              }
+            })}
         </div>
       </Container>
       <Container class1="popular-wrapper py-5 home-wrapper-2">

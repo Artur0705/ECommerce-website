@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Marquee from "react-fast-marquee";
 import BlogCard from "../components/BlogCard";
-import ProductCard from "../components/ProductCard";
 import SpecialProduct from "../components/SpecialProduct";
 import Meta from "../components/Meta";
 import Container from "../components/Container";
@@ -254,10 +253,90 @@ const Home = () => {
           <div className="col-12">
             <h3 className="section-heading">Featured Collection</h3>
           </div>
-          <ProductCard />
-          <ProductCard />
-          <ProductCard />
-          <ProductCard />
+          {productState &&
+            // eslint-disable-next-line array-callback-return
+            productState?.map((item, index) => {
+              if (item?.tags === "featured") {
+                return (
+                  <div key={index} className="col-3">
+                    <div className="product-card position-relative">
+                      <div className="wishlist-icon position-absolute">
+                        <button
+                          className="border-0 bg-transparent"
+                          onClick={() => {
+                            if (isWishlist && isWishlist?.[item?._id]) {
+                              removeFromWish?.(item?._id);
+                            } else {
+                              addToWish?.(item?._id);
+                            }
+                          }}
+                        >
+                          {isWishlist && isWishlist?.[item?._id] ? (
+                            <AiFillHeart className="fs-6 text-danger" />
+                          ) : (
+                            <AiOutlineHeart className="fs-6 " />
+                          )}
+                        </button>
+                      </div>
+                      <Link
+                        to={
+                          location.pathname === "/"
+                            ? `/products/${item?._id}`
+                            : location?.pathname === "/products"
+                            ? `/products/${item?._id}`
+                            : `/product/${item?._id}`
+                        }
+                        className="product-image"
+                      >
+                        <img
+                          src={item?.images[0]?.url}
+                          className="img-fluid  mx-auto w-100"
+                          alt="product"
+                          style={{ height: "300px", width: "300px" }}
+                        />
+                        <img
+                          src={item?.images[1]?.url}
+                          className="img-fluid  mx-auto"
+                          alt="product"
+                          width={300}
+                        />
+                      </Link>
+                      <div className="product-details">
+                        <h6 className="brand">{item?.brand}</h6>
+                        <h5 className="product-title">{item?.title}</h5>
+                        <ReactStars
+                          count={5}
+                          size={24}
+                          value={item?.totalRating.toString()}
+                          edit={false}
+                          activeColor="#ffd700"
+                        />
+                        <p
+                          className="description"
+                          dangerouslySetInnerHTML={{
+                            __html: item?.description,
+                          }}
+                        ></p>
+                        <p className="price">$ {item?.price} </p>
+                      </div>
+                      <div className="action-bar position-absolute">
+                        <div className="d-flex flex-column gap-15">
+                          <button className="border-0 bg-transparent">
+                            <img src={prodcompare} alt="compare" />
+                          </button>
+                          <button className="border-0 bg-transparent">
+                            <img src={view} alt="view" />
+                          </button>
+                          <button className="border-0 bg-transparent">
+                            <img src={addcart} alt="addcart" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              }
+            })}
         </div>
       </Container>
 

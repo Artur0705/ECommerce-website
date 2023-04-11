@@ -1,7 +1,6 @@
 import React from "react";
 import ReactStars from "react-rating-stars-component";
 import { Link } from "react-router-dom";
-import watch from "../images/watch.jpg";
 
 const SpecialProduct = (props) => {
   const { title, brand, totalRating, price, sold, quantity, image } = props;

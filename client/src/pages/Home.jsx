@@ -1,5 +1,4 @@
-import React, { useEffect } from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
 import Marquee from "react-fast-marquee";
 import BlogCard from "../components/BlogCard";
 import ProductCard from "../components/ProductCard";
@@ -11,12 +10,62 @@ import { useDispatch, useSelector } from "react-redux";
 import { getAllBlogs } from "../features/blogs/blogSlice";
 import moment from "moment";
 import { getAllProducts } from "../features/products/productSlice";
+import ReactStars from "react-rating-stars-component";
+import { Link, useLocation } from "react-router-dom";
+import prodcompare from "../images/prodcompare.svg";
+import addcart from "../images/add-cart.svg";
+import view from "../images/view.svg";
+import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
+import { addToWishList } from "../features/products/productSlice";
+import { toast } from "react-toastify";
 
 const Home = () => {
   const dispatch = useDispatch();
+  const location = useLocation();
   const blogState = useSelector((state) => state?.blog?.blog);
   const productState = useSelector((state) => state?.product?.product);
   console.log(productState);
+  const [isWishlist, setIsWishlist] = useState(() => {
+    const wishlistData = JSON.parse(localStorage.getItem("wishlist")) || {};
+    return (
+      productState &&
+      productState?.reduce((acc, item) => {
+        acc[item._id] = wishlistData[item._id] ?? false;
+        return acc;
+      }, {})
+    );
+  });
+
+  const addToWish = (id) => {
+    dispatch(addToWishList(id));
+    setIsWishlist({ ...isWishlist, [id]: true });
+    toast.success("Product Added To Wishlist");
+    localStorage.setItem(
+      "wishlist",
+      JSON.stringify({ ...isWishlist, [id]: true })
+    );
+  };
+
+  const removeFromWish = (id) => {
+    dispatch(addToWishList(id));
+    setIsWishlist({ ...isWishlist, [id]: false });
+    toast.info("The Product Has Been Removed From Wishlist");
+    localStorage?.setItem(
+      "wishlist",
+      JSON.stringify({ ...isWishlist, [id]: false })
+    );
+  };
+
+  useEffect(() => {
+    const wishlistData = JSON.parse(localStorage?.getItem("wishlist")) || {};
+    setIsWishlist(
+      productState &&
+        productState?.reduce((acc, item) => {
+          acc[item._id] = wishlistData[item?._id] ?? false;
+          return acc;
+        }, {})
+    );
+  }, [productState]);
 
   useEffect(
     () => {
@@ -283,6 +332,7 @@ const Home = () => {
         </div>
         <div className="row">
           {productState &&
+            // eslint-disable-next-line array-callback-return
             productState?.map((item, index) => {
               if (item?.tags === "special") {
                 return (
@@ -307,11 +357,91 @@ const Home = () => {
             <h3 className="section-heading">Our Popular Products</h3>
           </div>
         </div>
-        <div className="row">
-          <ProductCard />
-          <ProductCard />
-          <ProductCard />
-          <ProductCard />
+        <div className="row gap-5">
+          {productState &&
+            // eslint-disable-next-line array-callback-return
+            productState?.map((item, index) => {
+              if (item?.tags === "popular") {
+                return (
+                  <div key={index} className="col-3">
+                    <div className="product-card position-relative">
+                      <div className="wishlist-icon position-absolute">
+                        <button
+                          className="border-0 bg-transparent"
+                          onClick={() => {
+                            if (isWishlist && isWishlist?.[item?._id]) {
+                              removeFromWish?.(item?._id);
+                            } else {
+                              addToWish?.(item?._id);
+                            }
+                          }}
+                        >
+                          {isWishlist && isWishlist?.[item?._id] ? (
+                            <AiFillHeart className="fs-6 text-danger" />
+                          ) : (
+                            <AiOutlineHeart className="fs-6 " />
+                          )}
+                        </button>
+                      </div>
+                      <Link
+                        to={
+                          location.pathname === "/"
+                            ? `/products/${item?._id}`
+                            : location?.pathname === "/products"
+                            ? `/products/${item?._id}`
+                            : `/product/${item?._id}`
+                        }
+                        className="product-image"
+                      >
+                        <img
+                          src={item?.images[0]?.url}
+                          className="img-fluid  mx-auto w-100"
+                          alt="product"
+                          style={{ height: "300px", width: "300px" }}
+                        />
+                        <img
+                          src={item?.images[1]?.url}
+                          className="img-fluid  mx-auto"
+                          alt="product"
+                          width={300}
+                        />
+                      </Link>
+                      <div className="product-details">
+                        <h6 className="brand">{item?.brand}</h6>
+                        <h5 className="product-title">{item?.title}</h5>
+                        <ReactStars
+                          count={5}
+                          size={24}
+                          value={item?.totalRating.toString()}
+                          edit={false}
+                          activeColor="#ffd700"
+                        />
+                        <p
+                          className="description"
+                          dangerouslySetInnerHTML={{
+                            __html: item?.description,
+                          }}
+                        ></p>
+                        <p className="price">$ {item?.price} </p>
+                      </div>
+                      <div className="action-bar position-absolute">
+                        <div className="d-flex flex-column gap-15">
+                          <button className="border-0 bg-transparent">
+                            <img src={prodcompare} alt="compare" />
+                          </button>
+                          <button className="border-0 bg-transparent">
+                            <img src={view} alt="view" />
+                          </button>
+                          <button className="border-0 bg-transparent">
+                            <img src={addcart} alt="addcart" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              }
+            })}
         </div>
       </Container>
       <Container class1="marque-wrapper home-wrapper-2 py-5">

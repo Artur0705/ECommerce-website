@@ -21,7 +21,7 @@ const Wishlist = () => {
     dispatch(getUserProductWishlist());
   };
 
-  const wishlistState = useSelector((state) => state.auth.wishlist?.wishlist);
+  const wishlistState = useSelector((state) => state?.auth?.wishlist?.wishlist);
   const removeFromWishList = (id) => {
     dispatch(addToWishList(id));
     toast.success("Product Removed from Wishlist");
@@ -36,39 +36,40 @@ const Wishlist = () => {
       <BreadCrumb title="Wishlist" />
       <Container class1="wishlist-wrapper home-wrapper-2 py-5">
         <div className="row">
-          {wishlistState?.length === 0 && (
+          {wishlistState && wishlistState?.length === 0 && (
             <div className="text-center fs-3">Wishlist Is Empty</div>
           )}
-          {wishlistState?.map((item, index) => {
-            return (
-              <div className="col-3" key={index}>
-                <div className="wishlist-card position-relative">
-                  <img
-                    onClick={() => removeFromWishList(item?._id)}
-                    src="images/cross.svg"
-                    alt="cross"
-                    className="position-absolute img-fluid cross"
-                  />
-                  <div className="wishlist-card-image bg-white">
+          {wishlistState &&
+            wishlistState?.map((item, index) => {
+              return (
+                <div className="col-3" key={index}>
+                  <div className="wishlist-card position-relative">
                     <img
-                      src={
-                        item?.images[0]?.url
-                          ? item?.images[0]?.url
-                          : "images/watch.jpg"
-                      }
-                      className="img-fluid d-block mx-auto"
-                      alt="watch"
-                      width={300}
+                      onClick={() => removeFromWishList(item?._id)}
+                      src="images/cross.svg"
+                      alt="cross"
+                      className="position-absolute img-fluid cross"
                     />
-                  </div>
-                  <div className="py-3 px-3">
-                    <h5 className="title">{item?.title}</h5>
-                    <h6 className="price">$ {item?.price}</h6>
+                    <div className="wishlist-card-image bg-white">
+                      <img
+                        src={
+                          item?.images[0]?.url
+                            ? item?.images[0]?.url
+                            : "images/watch.jpg"
+                        }
+                        className="img-fluid d-block mx-auto"
+                        alt="watch"
+                        width={300}
+                      />
+                    </div>
+                    <div className="py-3 px-3">
+                      <h5 className="title">{item?.title}</h5>
+                      <h6 className="price">$ {item?.price}</h6>
+                    </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
         </div>
       </Container>
     </>

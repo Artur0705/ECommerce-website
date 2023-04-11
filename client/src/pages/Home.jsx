@@ -10,7 +10,7 @@ import { getAllBlogs } from "../features/blogs/blogSlice";
 import moment from "moment";
 import { getAllProducts } from "../features/products/productSlice";
 import ReactStars from "react-rating-stars-component";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import prodcompare from "../images/prodcompare.svg";
 import addcart from "../images/add-cart.svg";
 import view from "../images/view.svg";
@@ -20,7 +20,7 @@ import { toast } from "react-toastify";
 
 const Home = () => {
   const dispatch = useDispatch();
-  const location = useLocation();
+  const navigate = useNavigate();
   const blogState = useSelector((state) => state?.blog?.blog);
   const productState = useSelector((state) => state?.product?.product);
   console.log(productState);
@@ -278,29 +278,20 @@ const Home = () => {
                           )}
                         </button>
                       </div>
-                      <Link
-                        to={
-                          location.pathname === "/"
-                            ? `/products/${item?._id}`
-                            : location?.pathname === "/products"
-                            ? `/products/${item?._id}`
-                            : `/product/${item?._id}`
-                        }
-                        className="product-image"
-                      >
+                      <div className="product-image d-flex align-items-center justify-content-center">
                         <img
                           src={item?.images[0]?.url}
-                          className="img-fluid  mx-auto w-100"
+                          className="img-fluid  mx-auto "
                           alt="product"
-                          style={{ height: "300px", width: "300px" }}
+                          style={{ height: "240px", width: "240px" }}
                         />
                         <img
                           src={item?.images[1]?.url}
-                          className="img-fluid  mx-auto"
+                          className="img-fluid  mx-auto "
                           alt="product"
-                          width={300}
+                          style={{ height: "240px", width: "240px" }}
                         />
-                      </Link>
+                      </div>
                       <div className="product-details">
                         <h6 className="brand">{item?.brand}</h6>
                         <h5 className="product-title">{item?.title}</h5>
@@ -325,7 +316,11 @@ const Home = () => {
                             <img src={prodcompare} alt="compare" />
                           </button>
                           <button className="border-0 bg-transparent">
-                            <img src={view} alt="view" />
+                            <img
+                              onClick={() => navigate(`/products/${item?._id}`)}
+                              src={view}
+                              alt="view"
+                            />
                           </button>
                           <button className="border-0 bg-transparent">
                             <img src={addcart} alt="addcart" />
@@ -417,6 +412,7 @@ const Home = () => {
                 return (
                   <SpecialProduct
                     key={index}
+                    id={item?._id}
                     title={item?.title}
                     brand={item?.brand}
                     totalRating={item?.totalRating.toString()}
@@ -462,29 +458,21 @@ const Home = () => {
                           )}
                         </button>
                       </div>
-                      <Link
-                        to={
-                          location.pathname === "/"
-                            ? `/products/${item?._id}`
-                            : location?.pathname === "/products"
-                            ? `/products/${item?._id}`
-                            : `/product/${item?._id}`
-                        }
-                        className="product-image"
-                      >
+                      <div className="product-image d-flex align-items-center justify-content-center">
                         <img
                           src={item?.images[0]?.url}
-                          className="img-fluid  mx-auto w-100"
+                          className="img-fluid  mx-auto "
                           alt="product"
-                          style={{ height: "300px", width: "300px" }}
+                          style={{ height: "240px", width: "240px" }}
                         />
                         <img
                           src={item?.images[1]?.url}
-                          className="img-fluid  mx-auto"
+                          className="img-fluid  mx-auto "
                           alt="product"
-                          width={300}
+                          style={{ height: "240px", width: "240px" }}
                         />
-                      </Link>
+                      </div>
+
                       <div className="product-details">
                         <h6 className="brand">{item?.brand}</h6>
                         <h5 className="product-title">{item?.title}</h5>
@@ -509,7 +497,11 @@ const Home = () => {
                             <img src={prodcompare} alt="compare" />
                           </button>
                           <button className="border-0 bg-transparent">
-                            <img src={view} alt="view" />
+                            <img
+                              onClick={() => navigate(`/products/${item?._id}`)}
+                              src={view}
+                              alt="view"
+                            />
                           </button>
                           <button className="border-0 bg-transparent">
                             <img src={addcart} alt="addcart" />

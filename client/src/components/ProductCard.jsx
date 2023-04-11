@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ReactStars from "react-rating-stars-component";
-import { Link, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import prodcompare from "../images/prodcompare.svg";
 import addcart from "../images/add-cart.svg";
 import view from "../images/view.svg";
@@ -13,6 +14,7 @@ const ProductCard = (props) => {
   const { grid, data } = props;
   const dispatch = useDispatch();
   const location = useLocation();
+  const navigate = useNavigate();
   const [isWishlist, setIsWishlist] = useState(() => {
     const wishlistData = JSON.parse(localStorage.getItem("wishlist")) || {};
     return data?.reduce((acc, item) => {
@@ -80,29 +82,20 @@ const ProductCard = (props) => {
                   )}
                 </button>
               </div>
-              <Link
-                to={
-                  location.pathname === "/"
-                    ? `/products/${item?._id}`
-                    : location.pathname === "/products"
-                    ? `/products/${item?._id}`
-                    : `/product/${item?._id}`
-                }
-                className="product-image"
-              >
+              <div className="product-image d-flex align-items-center justify-content-center">
                 <img
                   src={item?.images[0]?.url}
-                  className="img-fluid  mx-auto w-100"
+                  className="img-fluid  mx-auto "
                   alt="product"
-                  style={{ height: "300px", width: "300px" }}
+                  style={{ height: "240px", width: "240px" }}
                 />
                 <img
                   src={item?.images[1]?.url}
-                  className="img-fluid  mx-auto"
+                  className="img-fluid  mx-auto "
                   alt="product"
-                  width={300}
+                  style={{ height: "240px", width: "240px" }}
                 />
-              </Link>
+              </div>
               <div className="product-details">
                 <h6 className="brand">{item?.brand}</h6>
                 <h5 className="product-title">{item?.title}</h5>
@@ -127,7 +120,11 @@ const ProductCard = (props) => {
                     <img src={prodcompare} alt="compare" />
                   </button>
                   <button className="border-0 bg-transparent">
-                    <img src={view} alt="view" />
+                    <img
+                      onClick={() => navigate(`/products/${item?._id}`)}
+                      src={view}
+                      alt="view"
+                    />
                   </button>
                   <button className="border-0 bg-transparent">
                     <img src={addcart} alt="addcart" />

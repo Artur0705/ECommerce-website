@@ -18,7 +18,7 @@ const ProductCard = (props) => {
   const [isWishlist, setIsWishlist] = useState(() => {
     const wishlistData = JSON.parse(localStorage.getItem("wishlist")) || {};
     return data?.reduce((acc, item) => {
-      acc[item._id] = wishlistData[item._id] ?? false;
+      acc[item?._id] = wishlistData[item?._id] ?? false;
       return acc;
     }, {});
   });
@@ -47,7 +47,7 @@ const ProductCard = (props) => {
     const wishlistData = JSON.parse(localStorage.getItem("wishlist")) || {};
     setIsWishlist(
       data?.reduce((acc, item) => {
-        acc[item._id] = wishlistData[item._id] ?? false;
+        acc[item?._id] = wishlistData[item?._id] ?? false;
         return acc;
       }, {})
     );

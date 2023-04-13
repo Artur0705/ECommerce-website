@@ -844,6 +844,11 @@ span {
   color: var(--color-777777);
 }
 
+.wish-btn {
+  font-size: 14px;
+  color: var(--color-777777);
+}
+
 .main-product-details .copy-btn {
   font-size: 14px;
   color: var(--color-777777);

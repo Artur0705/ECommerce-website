@@ -259,7 +259,7 @@ const Home = () => {
               if (item?.tags === "featured") {
                 return (
                   <div key={index} className="col-3">
-                    <div className="product-card position-relative">
+                    <div className="product-card position-relative mb-5">
                       <div className="wishlist-icon position-absolute">
                         <button
                           className="border-0 bg-transparent"
@@ -432,14 +432,14 @@ const Home = () => {
             <h3 className="section-heading">Our Popular Products</h3>
           </div>
         </div>
-        <div className="row gap-5">
+        <div className="row">
           {productState &&
             // eslint-disable-next-line array-callback-return
             productState?.map((item, index) => {
               if (item?.tags === "popular") {
                 return (
                   <div key={index} className="col-3">
-                    <div className="product-card position-relative">
+                    <div className="product-card position-relative mb-5">
                       <div className="wishlist-icon position-absolute">
                         <button
                           className="border-0 bg-transparent"

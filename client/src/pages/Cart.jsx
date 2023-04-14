@@ -5,10 +5,15 @@ import { AiOutlineDelete } from "react-icons/ai";
 import { Link } from "react-router-dom";
 import Container from "../components/Container";
 import { useDispatch, useSelector } from "react-redux";
-import { deleteCartProduct, getUserCart } from "../features/user/userSlice";
+import {
+  deleteCartProduct,
+  getUserCart,
+  updateCartProduct,
+} from "../features/user/userSlice";
 
 const Cart = () => {
   const dispatch = useDispatch();
+  const [productUpdateDetail, setproductUpdateDetail] = useState(null);
   const userCartState = useSelector((state) => state?.auth?.cartProducts);
   useEffect(
     () => {
@@ -16,19 +21,23 @@ const Cart = () => {
     }, // eslint-disable-next-line
     []
   );
-  const [subtotal, setSubtotal] = useState(0); // State to hold the subtotal
-  const [quantities, setQuantities] = useState(
-    userCartState &&
-      userCartState?.reduce((acc, item) => {
-        acc[item?.productId?._id] = item?.quantity;
-        return acc;
-      }, {})
-  );
 
-  useEffect(() => {
-    dispatch(getUserCart());
-    // eslint-disable-next-line
-  }, []);
+  useEffect(
+    () => {
+      if (productUpdateDetail !== null) {
+        dispatch(
+          updateCartProduct({
+            cartItemId: productUpdateDetail?.cartItemId,
+            quantity: productUpdateDetail?.quantity,
+          })
+        );
+        setTimeout(() => {
+          dispatch(getUserCart());
+        }, 300);
+      }
+    }, // eslint-disable-next-line
+    [productUpdateDetail]
+  );
 
   const deleteACartProduct = (id) => {
     dispatch(deleteCartProduct(id));
@@ -36,19 +45,13 @@ const Cart = () => {
       dispatch(getUserCart());
     }, 300);
   };
-  useEffect(() => {
-    // Calculate subtotal when quantities or userCartState changes
-    if (userCartState && userCartState?.length > 0) {
-      const calculatedSubtotal = userCartState?.reduce(
-        (total, item) =>
-          total + item?.price * quantities?.[item?.productId?._id],
-        0
-      );
-      setSubtotal(calculatedSubtotal);
-    } else {
-      setSubtotal(0);
-    }
-  }, [userCartState, quantities]);
+
+  const updateACartProduct = (id) => {
+    // dispatch(updateCartProduct({ cartItemId: id, quantity }));
+    // setTimeout(() => {
+    //   dispatch(getUserCart());
+    // }, 300);
+  };
 
   return (
     <>
@@ -104,7 +107,17 @@ const Cart = () => {
                           min={1}
                           max={10}
                           id=""
-                          value={quantities?.[item?.productId?._id]}
+                          value={
+                            productUpdateDetail?.quantity
+                              ? productUpdateDetail?.quantity
+                              : item?.quantity
+                          }
+                          onChange={(e) => {
+                            setproductUpdateDetail({
+                              cartItemId: item?._id,
+                              quantity: e.target.value,
+                            });
+                          }}
                         />
                       </div>
                       <div>
@@ -132,8 +145,8 @@ const Cart = () => {
                 Continue to Shopping
               </Link>
               <div className="d-flex flex-column align-items-end">
-                <h4>Subtotal: ${subtotal}</h4>
-                {/* Display the subtotal dynamically */}
+                <h4>Subtotal: $</h4>
+
                 <p>Taxes and Shipping calculated at checkout</p>
                 <Link to="/checkout" className="button">
                   Checkout

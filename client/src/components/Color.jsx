@@ -10,7 +10,7 @@ const Color = (props) => {
             return (
               <li
                 onClick={() => setColor(item?._id)}
-                style={{ backgroundColor: item?.title }}
+                style={{ backgroundColor: item?.title, cursor: "pointer" }}
                 key={index}
               ></li>
             );

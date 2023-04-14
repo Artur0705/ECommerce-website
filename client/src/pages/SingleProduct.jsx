@@ -13,6 +13,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getAProduct } from "../features/products/productSlice";
 import { addToWishList } from "../features/products/productSlice";
 import { toast } from "react-toastify";
+import { addProdCart } from "../features/user/userSlice";
 
 const SingleProduct = () => {
   const location = useLocation();
@@ -20,6 +21,8 @@ const SingleProduct = () => {
   const singleProductState = useSelector(
     (state) => state?.product?.singleProduct
   );
+  const [color, setColor] = useState(null);
+  const [quantity, setQuantity] = useState(1);
   const productState = useSelector((state) => state?.product?.product);
 
   const [isWishlist, setIsWishlist] = useState(() => {
@@ -72,6 +75,22 @@ const SingleProduct = () => {
     }, //eslint-disable-next-line
     []
   );
+
+  const addCart = () => {
+    if (color === null) {
+      toast.error("Please Choose Color");
+      return false;
+    } else {
+      dispatch(
+        addProdCart({
+          productId: singleProductState?._id,
+          quantity,
+          color,
+          price: singleProductState?.price,
+        })
+      );
+    }
+  };
   const props = {
     width: 400,
     height: 500,
@@ -184,7 +203,10 @@ const SingleProduct = () => {
                 </div>
                 <div className="d-flex gap-10 flex-column mt-2 mb-3">
                   <h3 className="product-heading">Color :</h3>
-                  <Color />
+                  <Color
+                    setColor={setColor}
+                    colorData={singleProductState?.color}
+                  />
                 </div>
                 <div className="d-flex align-items-center gap-15 flex-row mt-2 mb-3">
                   <h3 className="product-heading">Quantity :</h3>
@@ -197,10 +219,20 @@ const SingleProduct = () => {
                       max={10}
                       style={{ width: "70px" }}
                       id=""
+                      onChange={(e) => setQuantity(e.target.value)}
+                      value={quantity}
                     />
                   </div>
                   <div className="d-flex align-items-center gap-30 ms-5">
-                    <button className="button border-0" type="submit">
+                    <button
+                      className="button border-0"
+                      data-bs-toggle="modal"
+                      data-bs-target="#staticBackdrop"
+                      type="button"
+                      onClick={() => {
+                        addCart(singleProductState?._id);
+                      }}
+                    >
                       Add To Cart
                     </button>
                     <button className="button signup">Buy It Now</button>

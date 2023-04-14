@@ -60,8 +60,8 @@ const AddProduct = () => {
   const coloropt = [];
   colorState.forEach((i) => {
     coloropt.push({
-      value: i.title,
-      id: i._id,
+      label: i.title,
+      value: i._id,
     });
   });
 

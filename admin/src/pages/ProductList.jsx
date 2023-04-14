@@ -59,7 +59,7 @@ const ProductList = () => {
       title: productState[i].title,
       brand: productState[i].brand,
       category: productState[i].category,
-      color: productState[i].color[i],
+      color: Array.isArray(productState[i].color) && productState[i].color[i],
       quantity: productState[i].quantity,
       price: productState[i].price,
       action: (

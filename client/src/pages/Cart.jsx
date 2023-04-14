@@ -14,6 +14,7 @@ import {
 const Cart = () => {
   const dispatch = useDispatch();
   const [productUpdateDetail, setproductUpdateDetail] = useState(null);
+  const [totalAmount, setTotalAmount] = useState(null);
   const userCartState = useSelector((state) => state?.auth?.cartProducts);
   useEffect(
     () => {
@@ -46,12 +47,18 @@ const Cart = () => {
     }, 300);
   };
 
-  const updateACartProduct = (id) => {
-    // dispatch(updateCartProduct({ cartItemId: id, quantity }));
-    // setTimeout(() => {
-    //   dispatch(getUserCart());
-    // }, 300);
-  };
+  useEffect(
+    () => {
+      let sum = 0;
+      for (let index = 0; index < userCartState?.length; index++) {
+        sum =
+          sum +
+          Number(userCartState[index]?.quantity) * userCartState[index]?.price;
+        setTotalAmount(sum);
+      }
+    }, // eslint-disable-next-line
+    [userCartState]
+  );
 
   return (
     <>
@@ -144,14 +151,16 @@ const Cart = () => {
               <Link to="/products" className="button">
                 Continue to Shopping
               </Link>
-              <div className="d-flex flex-column align-items-end">
-                <h4>Subtotal: $</h4>
+              {(totalAmount !== null || totalAmount !== 0) && (
+                <div className="d-flex flex-column align-items-end">
+                  <h4>Subtotal: $ {totalAmount}</h4>
 
-                <p>Taxes and Shipping calculated at checkout</p>
-                <Link to="/checkout" className="button">
-                  Checkout
-                </Link>
-              </div>
+                  <p>Taxes and Shipping calculated at checkout</p>
+                  <Link to="/checkout" className="button">
+                    Checkout
+                  </Link>
+                </div>
+              )}
             </div>
           </div>
         </div>

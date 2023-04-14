@@ -3,7 +3,7 @@ import BreadCrumb from "../components/BreadCrumb";
 import Meta from "../components/Meta";
 import ProductCard from "../components/ProductCard";
 import ReactStars from "react-rating-stars-component";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import ReactImageZoom from "react-image-zoom";
 import Color from "../components/Color";
 import { IoIosGitCompare } from "react-icons/io";
@@ -13,18 +13,20 @@ import { useDispatch, useSelector } from "react-redux";
 import { getAProduct } from "../features/products/productSlice";
 import { addToWishList } from "../features/products/productSlice";
 import { toast } from "react-toastify";
-import { addProdCart } from "../features/user/userSlice";
+import { addProdCart, getUserCart } from "../features/user/userSlice";
 
 const SingleProduct = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const singleProductState = useSelector(
     (state) => state?.product?.singleProduct
   );
+  const productState = useSelector((state) => state?.product?.product);
   const [color, setColor] = useState(null);
   const [quantity, setQuantity] = useState(1);
-  const productState = useSelector((state) => state?.product?.product);
-
+  const [alreadyAdded, setAlreadeyAdded] = useState(false);
+  const cartState = useSelector((state) => state.auth?.cartProducts);
   const [isWishlist, setIsWishlist] = useState(() => {
     const wishlistData = JSON.parse(localStorage.getItem("wishlist")) || {};
     return (
@@ -72,9 +74,19 @@ const SingleProduct = () => {
   useEffect(
     () => {
       dispatch(getAProduct(getProductId));
+      dispatch(getUserCart());
     }, //eslint-disable-next-line
     []
   );
+
+  useEffect(() => {
+    for (let index = 0; index < cartState?.length; index++) {
+      if (getProductId === cartState[index]?.productId?._id) {
+        setAlreadeyAdded(true);
+      }
+    }
+    //eslint-disable-next-line
+  }, []);
 
   const addCart = () => {
     if (color === null) {
@@ -89,6 +101,7 @@ const SingleProduct = () => {
           price: singleProductState?.price,
         })
       );
+      navigate("/cart");
     }
   };
   const props = {
@@ -165,8 +178,8 @@ const SingleProduct = () => {
               </div>
               <div className="py-3">
                 <div className="d-flex gap-10 align-items-center my-2">
-                  <h3 className="product-heading">Type :</h3>
-                  <p className="product-data">Smart Watch</p>
+                  <h3 className="product-heading">Category :</h3>
+                  <p className="product-data">{singleProductState?.category}</p>
                 </div>
                 <div className="d-flex gap-10 align-items-center my-2">
                   <h3 className="product-heading">Brand :</h3>
@@ -201,41 +214,57 @@ const SingleProduct = () => {
                     </span>
                   </div>
                 </div>
-                <div className="d-flex gap-10 flex-column mt-2 mb-3">
-                  <h3 className="product-heading">Color :</h3>
-                  <Color
-                    setColor={setColor}
-                    colorData={singleProductState?.color}
-                  />
-                </div>
+                {alreadyAdded === false && (
+                  <>
+                    <div className="d-flex gap-10 flex-column mt-2 mb-3">
+                      <h3 className="product-heading">Color :</h3>
+                      <Color
+                        setColor={setColor}
+                        colorData={singleProductState?.color}
+                      />
+                    </div>
+                  </>
+                )}
                 <div className="d-flex align-items-center gap-15 flex-row mt-2 mb-3">
-                  <h3 className="product-heading">Quantity :</h3>
-                  <div className="">
-                    <input
-                      className="form-control"
-                      type="number"
-                      name=""
-                      min={1}
-                      max={10}
-                      style={{ width: "70px" }}
-                      id=""
-                      onChange={(e) => setQuantity(e.target.value)}
-                      value={quantity}
-                    />
-                  </div>
-                  <div className="d-flex align-items-center gap-30 ms-5">
+                  {alreadyAdded === false && (
+                    <>
+                      <h3 className="product-heading">Quantity :</h3>
+                      <div className="">
+                        <input
+                          className="form-control"
+                          type="number"
+                          name=""
+                          min={1}
+                          max={10}
+                          style={{ width: "70px" }}
+                          id=""
+                          onChange={(e) => setQuantity(e.target.value)}
+                          value={quantity}
+                        />
+                      </div>
+                    </>
+                  )}
+                  <div
+                    className={
+                      alreadyAdded
+                        ? "ms-0"
+                        : "ms-5 d-flex align-items-center gap-30 ms-5"
+                    }
+                  >
                     <button
                       className="button border-0"
                       data-bs-toggle="modal"
                       data-bs-target="#staticBackdrop"
                       type="button"
                       onClick={() => {
-                        addCart(singleProductState?._id);
+                        alreadyAdded
+                          ? navigate("/cart")
+                          : addCart(singleProductState?._id);
                       }}
                     >
-                      Add To Cart
+                      {alreadyAdded ? "Go To Cart" : "Add To Cart"}
                     </button>
-                    <button className="button signup">Buy It Now</button>
+                    {/* <button className="button signup">Buy It Now</button> */}
                   </div>
                 </div>
                 <div className="d-flex align-items-center gap-15">

@@ -5,7 +5,7 @@ import { AiOutlineDelete } from "react-icons/ai";
 import { Link } from "react-router-dom";
 import Container from "../components/Container";
 import { useDispatch, useSelector } from "react-redux";
-import { getUserCart } from "../features/user/userSlice";
+import { deleteCartProduct, getUserCart } from "../features/user/userSlice";
 
 const Cart = () => {
   const dispatch = useDispatch();
@@ -30,11 +30,18 @@ const Cart = () => {
     // eslint-disable-next-line
   }, []);
 
+  const deleteACartProduct = (id) => {
+    dispatch(deleteCartProduct(id));
+    setTimeout(() => {
+      dispatch(getUserCart());
+    }, 300);
+  };
   useEffect(() => {
     // Calculate subtotal when quantities or userCartState changes
     if (userCartState && userCartState?.length > 0) {
       const calculatedSubtotal = userCartState?.reduce(
-        (total, item) => total + item?.price * quantities[item?.productId?._id],
+        (total, item) =>
+          total + item?.price * quantities?.[item?.productId?._id],
         0
       );
       setSubtotal(calculatedSubtotal);
@@ -73,16 +80,16 @@ const Cart = () => {
                         />
                       </div>
                       <div className="w-75">
-                        <p>{item?.productId.title}</p>
+                        <p>{item?.productId?.title}</p>
 
-                        <p className="d-flex gap-3">
+                        <div className="d-flex gap-3">
                           Color:
                           <ul className="colors ps-0">
                             <li
                               style={{ backgroundColor: item?.color?.title }}
                             ></li>
                           </ul>
-                        </p>
+                        </div>
                       </div>
                     </div>
                     <div className="cart-col-2">
@@ -97,23 +104,22 @@ const Cart = () => {
                           min={1}
                           max={10}
                           id=""
-                          value={quantities[item?.productId?._id]}
-                          onChange={(e) => {
-                            const updatedQuantities = {
-                              ...quantities,
-                              [item?.productId?._id]: parseInt(e.target.value),
-                            };
-                            setQuantities(updatedQuantities);
-                          }}
+                          value={quantities?.[item?.productId?._id]}
                         />
                       </div>
                       <div>
-                        <AiOutlineDelete className="text-danger fs-3" />
+                        <AiOutlineDelete
+                          style={{ cursor: "pointer" }}
+                          onClick={() => {
+                            deleteACartProduct(item?._id);
+                          }}
+                          className="text-danger fs-3"
+                        />
                       </div>
                     </div>
                     <div className="cart-col-4">
                       <h5 className="price">
-                        $ {item?.price * quantities[item?.productId?._id]}
+                        $ {item?.price * item?.quantity}
                       </h5>
                     </div>
                   </div>
@@ -126,7 +132,7 @@ const Cart = () => {
                 Continue to Shopping
               </Link>
               <div className="d-flex flex-column align-items-end">
-                <h4>Subtotal: ${subtotal}</h4>{" "}
+                <h4>Subtotal: ${subtotal}</h4>
                 {/* Display the subtotal dynamically */}
                 <p>Taxes and Shipping calculated at checkout</p>
                 <Link to="/checkout" className="button">

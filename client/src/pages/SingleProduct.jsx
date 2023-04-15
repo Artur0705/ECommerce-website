@@ -112,7 +112,7 @@ const SingleProduct = () => {
       ? singleProductState?.images?.[0]?.url
       : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRuQTAUMn4XWRpmEiXZmABDpBvL40ydiMEtlSZrrX1R1kO4fPNbnN_k&usqp=CAE&s",
   };
-
+  // eslint-disable-next-line
   const [orderedProduct, setOrderedProduct] = useState(true);
   const copyToClipboard = (text) => {
     let textField = document.createElement("textarea");

@@ -7,14 +7,16 @@ import Container from "../components/Container";
 import { useDispatch, useSelector } from "react-redux";
 import { useFormik } from "formik";
 import * as yup from "yup";
+import ReactSelect from "react-select";
+import csc from "country-state-city";
 
 const shippingSchema = yup.object({
   firstName: yup.string().required("First Name is Required"),
   lastName: yup.string().required("Last Name is required"),
   address: yup.string().required("Address is required"),
-  state: yup.string().required("State is required"),
-  city: yup.string().required("City is required"),
-  country: yup.string().required("Country is required"),
+  state: yup.object().required("State is required"),
+  city: yup.object().required("City is required"),
+  country: yup.object().required("Country is required"),
   postCode: yup.string().required("Post Code is required"),
 });
 
@@ -24,6 +26,7 @@ const CheckOut = () => {
   const userState = useSelector((state) => state?.auth?.user);
   const [totalAmount, setTotalAmount] = useState(null);
   const [shippingInfo, setShippingInfo] = useState(null);
+  const countries = csc.getAllCountries();
 
   useEffect(
     () => {
@@ -55,6 +58,22 @@ const CheckOut = () => {
       setShippingInfo(values);
     },
   });
+
+  const updatedCountries = countries.map((country) => ({
+    label: country.name,
+    value: country.id,
+    ...country,
+  }));
+  const updatedStates = (countryId) =>
+    csc
+      .getStatesOfCountry(countryId)
+      .map((state) => ({ label: state.name, value: state.id, ...state }));
+  const updatedCities = (stateId) =>
+    csc
+      .getCitiesOfState(stateId)
+      .map((city) => ({ label: city.name, value: city.id, ...city }));
+
+  useEffect(() => {}, [formik.values]);
 
   return (
     <>
@@ -108,19 +127,19 @@ const CheckOut = () => {
                 className="d-flex gap-15 flex-wrap justify-content-between"
               >
                 <div className="w-100">
-                  <select
+                  <ReactSelect
+                    id="country"
                     name="country"
+                    label="country"
+                    options={updatedCountries}
                     value={formik.values.country}
-                    onChange={formik.handleChange("country")}
-                    onBlur={formik.handleBlur("country")}
-                    className="form-control form-select"
-                    id=""
-                  >
-                    <option value="" selected disabled>
-                      Select Country
-                    </option>
-                    <option value="Australia">Australia</option>
-                  </select>
+                    placeholder="Select Country"
+                    onChange={(value) => {
+                      formik.setFieldValue("country", value);
+                      formik.setFieldValue("state", null);
+                      formik.setFieldValue("city", null);
+                    }}
+                  />
                   <div className="error ms-2 my-1">
                     {formik.touched.country && formik.errors.country}
                   </div>
@@ -179,40 +198,39 @@ const CheckOut = () => {
                   />
                 </div>
                 <div className="flex-grow-1">
-                  <input
-                    type="text"
-                    placeholder="City"
-                    className="form-control"
-                    name="city"
-                    value={formik.values.city}
-                    onChange={formik.handleChange("city")}
-                    onBlur={formik.handleBlur("city")}
+                  <ReactSelect
+                    id="state"
+                    name="state"
+                    placeholder="Select State"
+                    options={updatedStates(
+                      formik.values.country ? formik.values.country.value : null
+                    )}
+                    value={formik.values.state}
+                    onChange={(value) => {
+                      formik.setFieldValue("state", value);
+                      formik.setFieldValue("city", null);
+                    }}
                   />
+
                   <div className="error ms-2 my-1">
-                    {formik.touched.city && formik.errors.city}
+                    {formik.touched.state && formik.errors.state}
                   </div>
                 </div>
                 <div className="flex-grow-1">
-                  <select
-                    name="state"
-                    value={formik.values.state}
-                    onChange={formik.handleChange("state")}
-                    onBlur={formik.handleBlur("state")}
-                    className="form-control form-select"
-                    id=""
-                  >
-                    <option value="" selected disabled>
-                      Select State
-                    </option>
-                    <option value="VIC">VIC</option>
-                    <option value="NSW">NSW</option>
-                    <option value="QLD">QLD</option>
-                    <option value="ACT">ACT</option>
-                    <option value="NT">NT</option>
-                    <option value="SA">SA</option>
-                  </select>
+                  <ReactSelect
+                    id="city"
+                    name="city"
+                    placeholder="Select City"
+                    options={updatedCities(
+                      formik.values.state ? formik.values.state.value : null
+                    )}
+                    value={formik.values.city}
+                    onChange={(value) => {
+                      formik.setFieldValue("city", value);
+                    }}
+                  />
                   <div className="error ms-2 my-1">
-                    {formik.touched.state && formik.errors.state}
+                    {formik.touched.city && formik.errors.city}
                   </div>
                 </div>
                 <div className="flex-grow-1">

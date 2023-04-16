@@ -29,6 +29,10 @@ const {
   updateProductQuantityFromCart,
 } = require("../controller/userController");
 const { authMiddleware, isAdmin } = require("../middleware/authMiddleware");
+const {
+  checkout,
+  paymentVerification,
+} = require("../controller/paymentController");
 
 const router = express.Router();
 
@@ -45,6 +49,8 @@ router.put("/password", authMiddleware, updatePassword);
 router.post("/login", loginUser);
 router.post("/admin-login", loginAdmin);
 router.post("/cart", authMiddleware, userCart);
+router.post("/order/checkout", authMiddleware, checkout);
+router.post("/order/paymentverification", authMiddleware, paymentVerification);
 // router.post("/cart/apply-coupon", authMiddleware, applyCoupon);
 router.post("/cart/create-order", authMiddleware, createOrder);
 router.get("/all-users", getAllUser);

@@ -26,6 +26,7 @@ const CheckOut = () => {
   const userState = useSelector((state) => state?.auth?.user);
   const [totalAmount, setTotalAmount] = useState(null);
   const [shippingInfo, setShippingInfo] = useState(null);
+  console.log(shippingInfo);
   const countries = csc.getAllCountries();
 
   useEffect(

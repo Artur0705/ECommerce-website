@@ -46,6 +46,17 @@ export const addProdCart = createAsyncThunk(
   }
 );
 
+export const createAnOrder = createAsyncThunk(
+  "user/cart/create-order",
+  async (orderDetail, thunkAPI) => {
+    try {
+      return await authService.createOrder(orderDetail);
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error);
+    }
+  }
+);
+
 export const deleteCartProduct = createAsyncThunk(
   "user/cart/product/delete",
   async (cartItemId, thunkAPI) => {
@@ -222,6 +233,27 @@ export const authSlice = createSlice({
         }
       })
       .addCase(updateCartProduct.rejected, (state, action) => {
+        state.isError = false;
+        state.isError = true;
+        state.isSuccess = false;
+        state.isError = action.error;
+        if (state.isSuccess === false) {
+          toast.error("Something Went Wrong");
+        }
+      })
+      .addCase(createAnOrder.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(createAnOrder.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isError = false;
+        state.isSuccess = true;
+        state.orderedProducts = action.payload;
+        if (state.isSuccess === true) {
+          toast.success("Ordered Succesfully");
+        }
+      })
+      .addCase(createAnOrder.rejected, (state, action) => {
         state.isError = false;
         state.isError = true;
         state.isSuccess = false;

@@ -6,8 +6,9 @@ const instance = new RazorPay({
 });
 
 const checkout = async (req, res) => {
+  const { amount } = req.body;
   const option = {
-    amount: 50000,
+    amount: amount * 100,
     currency: "AUD",
   };
 

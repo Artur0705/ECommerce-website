@@ -9,14 +9,18 @@ import { useFormik } from "formik";
 import * as yup from "yup";
 import ReactSelect from "react-select";
 import csc from "country-state-city";
+import axios from "axios";
+import { base_url } from "../utils/axiosConfig";
+import { config } from "../utils/axiosConfig";
+import { createAnOrder } from "../features/user/userSlice";
 
 const shippingSchema = yup.object({
   firstName: yup.string().required("First Name is Required"),
   lastName: yup.string().required("Last Name is required"),
   address: yup.string().required("Address is required"),
-  state: yup.object().required("State is required"),
-  city: yup.object().required("City is required"),
-  country: yup.object().required("Country is required"),
+  state: yup.string().required("State is required"),
+  city: yup.string().required("City is required"),
+  country: yup.string().required("Country is required"),
   postCode: yup.string().required("Post Code is required"),
 });
 
@@ -27,6 +31,12 @@ const CheckOut = () => {
   const [totalAmount, setTotalAmount] = useState(null);
   const [shippingInfo, setShippingInfo] = useState(null);
   console.log(shippingInfo);
+  const [paymentInfo, setPaymentInfo] = useState({
+    razorpayPaymentId: "",
+    razorpayOrderId: "",
+  });
+  console.log(paymentInfo);
+  const [cartProductState, setCartProductState] = useState([]);
   const countries = csc.getAllCountries();
 
   useEffect(
@@ -56,7 +66,27 @@ const CheckOut = () => {
     validationSchema: shippingSchema,
 
     onSubmit: (values) => {
-      setShippingInfo(values);
+      const selectedCountry = countries?.find(
+        (country) => country?.id === values?.country
+      );
+      const selectedState = csc
+        ?.getStatesOfCountry(values?.country)
+        ?.find((state) => state?.id === values?.state);
+      const selectedCity = csc
+        ?.getCitiesOfState(values?.state)
+        ?.find((city) => city?.id === values?.city);
+
+      const updatedShippingInfo = {
+        ...values,
+        country: selectedCountry ? selectedCountry?.name : "",
+        state: selectedState ? selectedState?.name : "",
+        city: selectedCity ? selectedCity?.name : "",
+      };
+
+      setShippingInfo(updatedShippingInfo);
+      setTimeout(() => {
+        checkOutHandler();
+      }, 1000);
     },
   });
 
@@ -76,6 +106,117 @@ const CheckOut = () => {
 
   useEffect(() => {}, [formik.values]);
 
+  const loadScript = (src) => {
+    return new Promise((resolve) => {
+      const script = document.createElement("script");
+      script.src = src;
+      script.onload = () => {
+        resolve(true);
+      };
+      script.onerror = () => {
+        resolve(false);
+      };
+      document.body.appendChild(script);
+    });
+  };
+
+  useEffect(() => {
+    let items = [];
+    for (let index = 0; index < cartState?.length; index++) {
+      items.push({
+        product: cartState?.[index]?.productId?._id,
+        quantity: cartState?.[index]?.quantity,
+        color: cartState?.[index]?.color?._id,
+        price: cartState?.[index]?.price,
+      });
+    }
+    setCartProductState(items);
+    // eslint-disable-next-line
+  }, []);
+
+  const checkOutHandler = async () => {
+    try {
+      const res = await loadScript(
+        "https://checkout.razorpay.com/v1/checkout.js"
+      );
+      if (!res) {
+        alert("RazorPay SDK failed to Load");
+        return;
+      }
+
+      const result = await axios.post(
+        `${base_url}user/order/checkout`,
+        { amount: totalAmount + 15 },
+        config
+      );
+
+      if (result && result.data && result.data.order) {
+        const { amount, id: order_id, currency } = result.data.order;
+        const options = {
+          key: process.env.KEY_ID,
+          amount: amount,
+          currency: currency,
+          name: shippingInfo?.firstName + " " + shippingInfo?.lastName,
+          description: "Test Transaction",
+          order_id: order_id,
+          handler: async function (response) {
+            const data = {
+              orderCreationId: order_id,
+              razorpayPaymentId: response?.razorpay_payment_id,
+              razorpayOrderId: response?.razorpay_order_id,
+            };
+            console.log(process.env.REACT_APP_KEY_ID);
+
+            const result = await axios.post(
+              `${base_url}user/order/paymentverification`,
+              data,
+              config
+            );
+
+            if (result && result.data) {
+              setPaymentInfo({
+                razorpayPaymentId: response?.razorpay_payment_id,
+                razorpayOrderId: response?.razorpay_order_id,
+              });
+
+              dispatch(
+                createAnOrder({
+                  totalPrice: totalAmount,
+                  totalPriceAfterDiscount: totalAmount,
+                  orderItems: cartProductState,
+                  paymentInfo,
+                  shippingInfo,
+                })
+              );
+            }
+          },
+          prefill: {
+            name: shippingInfo?.firstName + " " + shippingInfo?.lastName,
+            email: userState?.email,
+            contact: "",
+          },
+          notes: {
+            address: shippingInfo?.address,
+            state: shippingInfo?.state,
+            city: shippingInfo?.city,
+            country: shippingInfo?.country,
+            postCode: shippingInfo?.postCode,
+          },
+          theme: {
+            color: "#61dafb",
+          },
+        };
+
+        const paymentObject = new window.Razorpay(options);
+        paymentObject.open();
+      } else {
+        alert("Something Went Wrong");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("An error occurred during checkout");
+    }
+  };
   return (
     <>
       <Meta title={"Checkout"} />
@@ -131,19 +272,28 @@ const CheckOut = () => {
                   <ReactSelect
                     id="country"
                     name="country"
-                    label="country"
+                    label="Country"
                     options={updatedCountries}
-                    value={formik.values.country}
+                    value={updatedCountries.find(
+                      (option) => option.value === formik.values.country
+                    )}
+                    getOptionLabel={(option) => option.label}
                     placeholder="Select Country"
-                    onChange={(value) => {
-                      formik.setFieldValue("country", value);
-                      formik.setFieldValue("state", null);
-                      formik.setFieldValue("city", null);
+                    onChange={(option) => {
+                      formik.setFieldValue("country", option.value);
+                      // Set the country name in the console output
+                      const countryName = updatedCountries.find(
+                        (country) => country.value === option.value
+                      )?.label;
+                      console.log("Country:", countryName);
                     }}
+                    onBlur={formik.handleBlur}
                   />
-                  <div className="error ms-2 my-1">
-                    {formik.touched.country && formik.errors.country}
-                  </div>
+                  {formik.touched.country && formik.errors.country && (
+                    <div className="error ms-2 my-1">
+                      {formik.errors.country}
+                    </div>
+                  )}
                 </div>
                 <div className="flex-grow-1">
                   <input
@@ -202,38 +352,53 @@ const CheckOut = () => {
                   <ReactSelect
                     id="state"
                     name="state"
-                    placeholder="Select State"
-                    options={updatedStates(
-                      formik.values.country ? formik.values.country.value : null
+                    label="State"
+                    options={updatedStates(formik.values.country)}
+                    value={updatedStates(formik.values.country).find(
+                      (option) => option.value === formik.values.state
                     )}
-                    value={formik.values.state}
-                    onChange={(value) => {
-                      formik.setFieldValue("state", value);
-                      formik.setFieldValue("city", null);
+                    getOptionLabel={(option) => option.label}
+                    placeholder="Select State"
+                    onChange={(option) => {
+                      formik.setFieldValue("state", option.value);
+                      // Set the state name in the console output
+                      const stateName = updatedStates(
+                        formik.values.country
+                      ).find((state) => state.value === option.value)?.label;
+                      console.log("State:", stateName);
                     }}
+                    onBlur={formik.handleBlur}
                   />
-
-                  <div className="error ms-2 my-1">
-                    {formik.touched.state && formik.errors.state}
-                  </div>
+                  {formik.touched.state && formik.errors.state && (
+                    <div className="error ms-2 my-1">{formik.errors.state}</div>
+                  )}
                 </div>
                 <div className="flex-grow-1">
                   <ReactSelect
                     id="city"
                     name="city"
-                    placeholder="Select City"
-                    options={updatedCities(
-                      formik.values.state ? formik.values.state.value : null
+                    label="City"
+                    options={updatedCities(formik.values.state)}
+                    value={updatedCities(formik.values.state).find(
+                      (option) => option.value === formik.values.city
                     )}
-                    value={formik.values.city}
-                    onChange={(value) => {
-                      formik.setFieldValue("city", value);
+                    getOptionLabel={(option) => option.label}
+                    placeholder="Select City"
+                    onChange={(option) => {
+                      formik.setFieldValue("city", option.value);
+                      // Set the city name in the console output
+                      const cityName = updatedCities(formik.values.state).find(
+                        (city) => city.value === option.value
+                      )?.label;
+                      console.log("City:", cityName);
                     }}
+                    onBlur={formik.handleBlur}
                   />
-                  <div className="error ms-2 my-1">
-                    {formik.touched.city && formik.errors.city}
-                  </div>
+                  {formik.touched.city && formik.errors.city && (
+                    <div className="error ms-2 my-1">{formik.errors.city}</div>
+                  )}
                 </div>
+
                 <div className="flex-grow-1">
                   <input
                     type="text"

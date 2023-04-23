@@ -42,7 +42,7 @@ router.put("/reset-password/:token", resetPassword);
 //   isAdmin,
 //   updateOrderStatus
 // );
-router.put("/password", authMiddleware, updatePassword);
+router.put("/update-password", authMiddleware, updatePassword);
 router.post("/login", loginUser);
 router.post("/admin-login", loginAdmin);
 router.post("/cart", authMiddleware, userCart);

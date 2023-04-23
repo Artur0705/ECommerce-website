@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import BreadCrumb from "../components/BreadCrumb";
 import Container from "../components/Container";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
+import { updatePassword, updateProfile } from "../features/user/userSlice";
+import { CiEdit } from "react-icons/ci";
 
 const profileSchema = yup.object({
   firstName: yup.string().required("First Name is Required"),
@@ -12,12 +14,23 @@ const profileSchema = yup.object({
     .string()
     .email("Email Should Be Valid")
     .required("Email Address is Required"),
+  //   password: yup.string().required("Password Number is Required"),
   mobile: yup.number().required("Mobile Number is Required"),
+});
+
+const passwordSchema = yup.object({
+  currentPassword: yup.string().required("Current Password is Required"),
+  newPassword: yup.string().required("New Password is Required"),
+  confirmNewPassword: yup
+    .string()
+    .oneOf([yup.ref("newPassword"), null], "Passwords must match")
+    .required("Confirm New Password is Required"),
 });
 
 const Profile = () => {
   const dispatch = useDispatch();
   const userState = useSelector((state) => state?.auth?.user);
+  const [edit, setEdit] = useState(true);
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: {
@@ -30,7 +43,20 @@ const Profile = () => {
     validationSchema: profileSchema,
 
     onSubmit: (values) => {
-      dispatch();
+      dispatch(updateProfile(values));
+      setEdit(true);
+    },
+  });
+
+  const formikPassword = useFormik({
+    initialValues: {
+      currentPassword: "",
+      newPassword: "",
+      confirmNewPassword: "",
+    },
+    validationSchema: passwordSchema,
+    onSubmit: (values) => {
+      dispatch(updatePassword(values));
     },
   });
 
@@ -41,6 +67,12 @@ const Profile = () => {
       <Container className1="cart-wrapper home-wrapper-2 py-5">
         <div className="row">
           <div className="col-12">
+            <div className="d-flex justify-content-between align-items-center">
+              <h3 className="my-3">Update Profile</h3>
+              <CiEdit className="fs-3" onClick={() => setEdit(false)} />
+            </div>
+          </div>
+          <div className="col-12">
             <form onSubmit={formik.handleSubmit}>
               <div className="mb-3">
                 <label htmlFor="example1" className="form-label">
@@ -50,6 +82,7 @@ const Profile = () => {
                   type="text"
                   name="firstName"
                   className="form-control"
+                  disabled={edit}
                   id="example1"
                   value={formik.values.firstName}
                   onChange={formik.handleChange("firstName")}
@@ -67,6 +100,7 @@ const Profile = () => {
                   type="text"
                   name="lastName"
                   className="form-control"
+                  disabled={edit}
                   id="example2"
                   value={formik.values.lastName}
                   onChange={formik.handleChange("lastName")}
@@ -84,6 +118,7 @@ const Profile = () => {
                   type="email"
                   name="email"
                   className="form-control"
+                  disabled={edit}
                   id="exampleInputEmail1"
                   aria-describedby="emailHelp"
                   value={formik.values.email}
@@ -99,7 +134,27 @@ const Profile = () => {
                 </div>
               </div>
 
-              <div className="mb-3">
+              {/* <div className="mb-5">
+                <label htmlFor="exampleInputPassword" className="form-label">
+                  Password
+                </label>
+                <input
+                  type="text"
+                  name="password"
+                  className="form-control"
+                  disabled={edit}
+                  id="exampleInputPassword"
+                  aria-describedby="passwordHelp"
+                  value={formik.values.password}
+                  onChange={formik.handleChange("password")}
+                  onBlur={formik.handleBlur("password")}
+                />
+                <div className="error">
+                  {formik.touched.password && formik.errors.password}
+                </div>
+              </div> */}
+
+              <div className="mb-5">
                 <label htmlFor="exampleInputMobile" className="form-label">
                   Mobile Number
                 </label>
@@ -107,6 +162,7 @@ const Profile = () => {
                   type="number"
                   name="mobile"
                   className="form-control"
+                  disabled={edit}
                   id="exampleInputMobile"
                   aria-describedby="emailHelp"
                   value={formik.values.mobile}
@@ -118,9 +174,82 @@ const Profile = () => {
                 </div>
               </div>
 
-              <button type="submit" className="btn btn-primary">
-                Save
-              </button>
+              {edit === false && (
+                <button type="submit" className="btn btn-primary mb-5">
+                  Save
+                </button>
+              )}
+            </form>
+            <div className="d-flex justify-content-between align-items-center">
+              <h3 className="my-3">Update Password</h3>
+              <CiEdit className="fs-3" onClick={() => setEdit(false)} />
+            </div>
+            <form onSubmit={formikPassword.handleSubmit}>
+              <div className="mb-3">
+                <label htmlFor="currentPassword" className="form-label">
+                  Current Password
+                </label>
+                <input
+                  type="password"
+                  name="currentPassword"
+                  className="form-control"
+                  disabled={edit}
+                  id="currentPassword"
+                  value={formikPassword.values.currentPassword}
+                  onChange={formikPassword.handleChange("currentPassword")}
+                  onBlur={formikPassword.handleBlur("currentPassword")}
+                />
+                <div className="error">
+                  {formikPassword.touched.currentPassword &&
+                    formikPassword.errors.currentPassword}
+                </div>
+              </div>
+
+              <div className="mb-3">
+                <label htmlFor="newPassword" className="form-label">
+                  New Password
+                </label>
+                <input
+                  type="password"
+                  name="newPassword"
+                  className="form-control"
+                  disabled={edit}
+                  id="newPassword"
+                  value={formikPassword.values.newPassword}
+                  onChange={formikPassword.handleChange("newPassword")}
+                  onBlur={formikPassword.handleBlur("newPassword")}
+                />
+                <div className="error">
+                  {formikPassword.touched.newPassword &&
+                    formikPassword.errors.newPassword}
+                </div>
+              </div>
+
+              <div className="mb-3">
+                <label htmlFor="confirmNewPassword" className="form-label">
+                  Confirm New Password
+                </label>
+                <input
+                  type="password"
+                  name="confirmNewPassword"
+                  className="form-control"
+                  disabled={edit}
+                  id="confirmNewPassword"
+                  value={formikPassword.values.confirmNewPassword}
+                  onChange={formikPassword.handleChange("confirmNewPassword")}
+                  onBlur={formikPassword.handleBlur("confirmNewPassword")}
+                />
+                <div className="error">
+                  {formikPassword.touched.confirmNewPassword &&
+                    formikPassword.errors.confirmNewPassword}
+                </div>
+              </div>
+
+              {edit === false && (
+                <button type="submit" className="btn btn-primary mb-5">
+                  Update Password
+                </button>
+              )}
             </form>
           </div>
         </div>

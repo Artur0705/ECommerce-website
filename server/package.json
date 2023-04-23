@@ -27,6 +27,7 @@
     "razorpay": "^2.8.6",
     "sharp": "^0.31.3",
     "slugify": "^1.6.5",
+    "stripe": "^12.1.1",
     "uniqid": "^5.4.0"
   },
   "devDependencies": {

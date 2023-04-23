@@ -67,6 +67,17 @@ const createOrder = async (orderDetail) => {
   }
 };
 
+const checkoutWithStripe = async (stripeData) => {
+  const response = await axios.post(
+    `${base_url}order/checkout-stripe`,
+    stripeData,
+    config
+  );
+  if (response.data) {
+    return response.data;
+  }
+};
+
 export const authService = {
   register,
   login,
@@ -76,4 +87,5 @@ export const authService = {
   removeProductFromCart,
   updateProductFromCart,
   createOrder,
+  checkoutWithStripe,
 };

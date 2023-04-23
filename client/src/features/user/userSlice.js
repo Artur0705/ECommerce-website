@@ -102,6 +102,17 @@ const initialState = {
   message: "",
 };
 
+export const checkoutStripe = createAsyncThunk(
+  "user/checkout-stripe",
+  async (stripeData, thunkAPI) => {
+    try {
+      return await authService.checkoutWithStripe(stripeData);
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error);
+    }
+  }
+);
+
 export const authSlice = createSlice({
   name: "auth",
   initialState: initialState,
@@ -261,6 +272,21 @@ export const authSlice = createSlice({
         if (state.isSuccess === false) {
           toast.error("Something Went Wrong");
         }
+      })
+      .addCase(checkoutStripe.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(checkoutStripe.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isError = false;
+        state.isSuccess = true;
+        state.stripeCheckout = action.payload;
+      })
+      .addCase(checkoutStripe.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.isSuccess = false;
+        state.message = action.error;
       });
   },
 });

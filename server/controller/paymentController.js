@@ -1,4 +1,6 @@
 const RazorPay = require("razorpay");
+const Stripe = require("stripe");
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 const instance = new RazorPay({
   key_id: process.env.KEY_ID,
@@ -27,7 +29,40 @@ const paymentVerification = async (req, res) => {
   });
 };
 
+const createStripePaymentIntent = async (req, res) => {
+  const { amount } = req.body;
+  try {
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: amount * 100,
+      currency: "AUD",
+    });
+
+    res.json({
+      success: true,
+      client_secret: paymentIntent.client_secret,
+    });
+  } catch (error) {
+    res.status(400).json({ success: false, message: error.message });
+  }
+};
+
+const confirmStripePayment = async (req, res) => {
+  const { paymentIntentId } = req.body;
+  try {
+    const paymentIntent = await stripe.paymentIntents.confirm(paymentIntentId);
+
+    res.json({
+      success: true,
+      paymentIntent,
+    });
+  } catch (error) {
+    res.status(400).json({ success: false, message: error.message });
+  }
+};
+
 module.exports = {
   checkout,
   paymentVerification,
+  createStripePaymentIntent,
+  confirmStripePayment,
 };

@@ -23,6 +23,7 @@ import Cart from "./pages/Cart";
 import CheckOut from "./pages/CheckOut";
 import { PrivateRoutes } from "./routing/privateRoute";
 import { OpenRoutes } from "./routing/openRoutes";
+import Orders from "./pages/Orders";
 
 function App() {
   return (
@@ -42,6 +43,14 @@ function App() {
               element={
                 <PrivateRoutes>
                   <Cart />
+                </PrivateRoutes>
+              }
+            />
+            <Route
+              path="my-orders"
+              element={
+                <PrivateRoutes>
+                  <Orders />
                 </PrivateRoutes>
               }
             />

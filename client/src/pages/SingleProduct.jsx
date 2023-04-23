@@ -122,7 +122,7 @@ const SingleProduct = () => {
     document.execCommand("copy");
     textField.remove();
   };
-  const closeModal = () => {};
+  // const closeModal = () => {};
   return (
     <>
       <Meta title={"Product name"} />
@@ -253,8 +253,8 @@ const SingleProduct = () => {
                   >
                     <button
                       className="button border-0"
-                      data-bs-toggle="modal"
-                      data-bs-target="#staticBackdrop"
+                      // data-bs-toggle="modal"
+                      // data-bs-target="#staticBackdrop"
                       type="button"
                       onClick={() => {
                         alreadyAdded
@@ -424,32 +424,32 @@ const SingleProduct = () => {
 
       <div
         className="modal fade"
-        id="staticBackdrop"
-        data-bs-backdrop="static"
-        data-bs-keyboard="false"
-        tabIndex="-1"
-        aria-labelledby="staticBackdropLabel"
-        aria-hidden="true"
+        // id="staticBackdrop"
+        // data-bs-backdrop="static"
+        // data-bs-keyboard="false"
+        // tabIndex="-1"
+        // aria-labelledby="staticBackdropLabel"
+        // aria-hidden="true"
       >
         <div className="modal-dialog modal-dialog-centered ">
           <div className="modal-content">
             <div className="modal-header py-0 border-0">
-              <button
+              {/* <button
                 type="button"
                 className="btn-close"
                 data-bs-dismiss="modal"
                 aria-label="Close"
-              ></button>
+              ></button> */}
             </div>
             <div className="modal-body py-0">
               <div className="d-flex align-items-center">
-                <div className="flex-grow-1 w-50">
+                {/* <div className="flex-grow-1 w-50">
                   <img
                     src={singleProductState?.images?.[0]?.url}
                     className="img-fluid"
                     alt="product imgae"
                   />
-                </div>
+                </div> */}
                 <div className="d-flex flex-column flex-grow-1 w-50">
                   <h6 className="mb-3">Apple Watch</h6>
                   <p className="mb-1">Quantity: asgfd</p>
@@ -458,21 +458,21 @@ const SingleProduct = () => {
                 </div>
               </div>
             </div>
-            <div className="modal-footer border-0 py-0 justify-content-center gap-30">
+            {/* <div className="modal-footer border-0 py-0 justify-content-center gap-30">
               <button type="button" className="button" data-bs-dismiss="modal">
                 View My Cart
               </button>
               <button type="button" className="button signup">
                 Checkout
               </button>
-            </div>
+            </div> */}
             <div className="d-flex justify-content-center py-3">
               <Link
                 className="text-dark"
                 to="/product"
-                onClick={() => {
-                  closeModal();
-                }}
+                // onClick={() => {
+                //   closeModal();
+                // }}
               >
                 Continue To Shopping
               </Link>

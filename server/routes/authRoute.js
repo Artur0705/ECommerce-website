@@ -18,15 +18,10 @@ const {
   saveAddress,
   userCart,
   getUserCart,
-  emptyCart,
-  applyCoupon,
   createOrder,
-  getOrders,
-  updateOrderStatus,
-  getAllOrders,
-  getOrderByUserId,
   removeProductFromCart,
   updateProductQuantityFromCart,
+  getMyOrders,
 } = require("../controller/userController");
 const { authMiddleware, isAdmin } = require("../middleware/authMiddleware");
 const {
@@ -67,7 +62,7 @@ router.post(
 );
 
 router.get("/all-users", getAllUser);
-// router.get("/get-orders", authMiddleware, getOrders);
+router.get("/getmyorders", authMiddleware, getMyOrders);
 // router.get("/get-all-orders", authMiddleware, isAdmin, getAllOrders);
 // router.post("/getorderbyuser/:id", authMiddleware, isAdmin, getOrderByUserId);
 router.get("/refresh", handleRefreshToken);

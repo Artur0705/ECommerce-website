@@ -20,7 +20,7 @@ import ShippingPolicy from "./pages/ShippingPolicy";
 import TermsAndConditions from "./pages/TermsAndConditions";
 import SingleProduct from "./pages/SingleProduct";
 import Cart from "./pages/Cart";
-import CheckOut from "./pages/CheckOut";
+import CheckOutWithElementsProvider from "./pages/CheckOutWithElementsProvider";
 import { PrivateRoutes } from "./routing/privateRoute";
 import { OpenRoutes } from "./routing/openRoutes";
 import Orders from "./pages/Orders";
@@ -67,7 +67,7 @@ function App() {
               path="checkout"
               element={
                 <PrivateRoutes>
-                  <CheckOut />
+                  <CheckOutWithElementsProvider />
                 </PrivateRoutes>
               }
             />

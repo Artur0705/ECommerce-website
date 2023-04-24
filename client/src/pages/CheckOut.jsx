@@ -12,10 +12,8 @@ import axios from "axios";
 import { base_url } from "../utils/axiosConfig";
 import { config } from "../utils/axiosConfig";
 import { createAnOrder } from "../features/user/userSlice";
-import { loadStripe } from "@stripe/stripe-js";
-import CardForm from "./CardForm";
-import { Elements } from "@stripe/react-stripe-js";
-import OurStore from "./OurStore";
+import { toast } from "react-toastify";
+import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 
 const shippingSchema = yup.object({
   firstName: yup.string().required("First Name is Required"),
@@ -41,7 +39,10 @@ const CheckOut = () => {
   const [cities, setCities] = useState([]);
   const [selectedCountryIso2, setSelectedCountryIso2] = useState(null);
   const [selectedStateIso2, setSelectedStateIso2] = useState(null);
-  const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
+  const [loading, setLoading] = useState(false);
+  const stripe = useStripe();
+  const elements = useElements();
+
   const [paymentGateway, setPaymentGateway] = useState("");
 
   const fetchCountries = async () => {
@@ -200,102 +201,144 @@ const CheckOut = () => {
     // eslint-disable-next-line
   }, []);
 
-  const checkOutHandler = async () => {
+  const handleStripePayment = async () => {
+    setLoading(true);
     try {
-      const res = await loadScript(
-        "https://checkout.razorpay.com/v1/checkout.js"
-      );
-      if (!res) {
-        alert("RazorPay SDK failed to Load");
-        return;
-      }
-
-      const result = await axios.post(
-        `${base_url}user/order/checkout`,
+      const response = await axios.post(
+        `${base_url}user/order/create-stripe-payment`,
         { amount: totalAmount + 15 },
         config
       );
+      const clientSecret = response.data.client_secret;
 
-      if (result && result.data && result.data.order) {
-        const { amount, id: order_id, currency } = result.data.order;
-        const options = {
-          key: process.env.REACT_APP_KEY_ID,
-          amount: amount,
-          currency: currency,
-          name: shippingInfo?.firstName + " " + shippingInfo?.lastName,
-          description: "Test Transaction",
-          order_id: order_id,
-          handler: async function (response) {
-            try {
-              const data = {
-                orderCreationId: order_id,
-                razorpayPaymentId: response?.razorpay_payment_id,
-                razorpayOrderId: response?.razorpay_order_id,
-              };
-              console.log("Payment data:", data);
+      const { error } = await stripe.confirmCardPayment(clientSecret, {
+        payment_method: {
+          card: elements.getElement(CardElement),
+        },
+      });
 
-              const result = await axios.post(
-                `${base_url}user/order/paymentverification`,
-                data,
-                config
-              );
-              console.log("Payment verification result:", result);
-
-              if (result && result?.data) {
-                dispatch(
-                  createAnOrder({
-                    totalPrice: totalAmount,
-                    totalPriceAfterDiscount: totalAmount,
-                    orderItems: cartProductState,
-                    paymentInfo: {
-                      razorpayPaymentId: response?.razorpay_payment_id,
-                      razorpayOrderId: response?.razorpay_order_id,
-                    },
-                    shippingInfo: {
-                      firstName: shippingInfo?.firstName,
-                      lastName: shippingInfo?.lastName,
-                      address: shippingInfo?.address,
-                      state: shippingInfo?.state,
-                      city: shippingInfo?.city,
-                      country: shippingInfo?.country,
-                      postCode: shippingInfo?.postCode,
-                      other: shippingInfo?.other,
-                    },
-                  })
-                );
-              }
-            } catch (error) {
-              console.error(error);
-              alert("An error occurred during payment verification");
-            }
-          },
-          prefill: {
-            name: shippingInfo?.firstName + " " + shippingInfo?.lastName,
-            email: userState?.email,
-            contact: "",
-          },
-          notes: {
-            address: shippingInfo?.address,
-            state: shippingInfo?.state,
-            city: shippingInfo?.city,
-            country: shippingInfo?.country,
-            postCode: shippingInfo?.postCode,
-          },
-          theme: {
-            color: "#61dafb",
-          },
-        };
-
-        const paymentObject = new window.Razorpay(options);
-        paymentObject.open();
+      if (error) {
+        console.error("Error:", error);
+        toast.error("Payment failed. Please try again.");
+        setLoading(false);
       } else {
-        alert("Something Went Wrong");
+        console.log("Payment successful");
+        toast.success("Payment successful");
+        setLoading(false);
       }
     } catch (error) {
-      console.error(error);
-      alert("An error occurred during checkout");
+      console.error("Error:", error);
+      toast.error("Payment failed. Please try again ape.");
+      setLoading(false);
     }
   };
+  const checkOutHandler = async () => {
+    if (paymentGateway === "razorpay") {
+      try {
+        const res = await loadScript(
+          "https://checkout.razorpay.com/v1/checkout.js"
+        );
+        if (!res) {
+          toast.error("RazorPay SDK failed to Load");
+          return;
+        }
+
+        const result = await axios.post(
+          `${base_url}user/order/checkout`,
+          { amount: totalAmount + 15 },
+          config
+        );
+
+        if (result && result.data && result.data.order) {
+          const { amount, id: order_id, currency } = result.data.order;
+          const options = {
+            key: process.env.REACT_APP_KEY_ID,
+            amount: amount,
+            currency: currency,
+            name: shippingInfo?.firstName + " " + shippingInfo?.lastName,
+            description: "Test Transaction",
+            order_id: order_id,
+            handler: async function (response) {
+              try {
+                const data = {
+                  orderCreationId: order_id,
+                  razorpayPaymentId: response?.razorpay_payment_id,
+                  razorpayOrderId: response?.razorpay_order_id,
+                };
+                console.log("Payment data:", data);
+
+                const result = await axios.post(
+                  `${base_url}user/order/paymentverification`,
+                  data,
+                  config
+                );
+                console.log("Payment verification result:", result);
+
+                if (result && result?.data) {
+                  dispatch(
+                    createAnOrder({
+                      totalPrice: totalAmount,
+                      totalPriceAfterDiscount: totalAmount,
+                      orderItems: cartProductState,
+                      paymentInfo: {
+                        razorpayPaymentId: response?.razorpay_payment_id,
+                        razorpayOrderId: response?.razorpay_order_id,
+                      },
+                      shippingInfo: {
+                        firstName: shippingInfo?.firstName,
+                        lastName: shippingInfo?.lastName,
+                        address: shippingInfo?.address,
+                        state: shippingInfo?.state,
+                        city: shippingInfo?.city,
+                        country: shippingInfo?.country,
+                        postCode: shippingInfo?.postCode,
+                        other: shippingInfo?.other,
+                      },
+                    })
+                  );
+                }
+              } catch (error) {
+                console.error(error);
+                toast.error("An error occurred during payment verification");
+              }
+            },
+            prefill: {
+              name: shippingInfo?.firstName + " " + shippingInfo?.lastName,
+              email: userState?.email,
+              contact: "",
+            },
+            notes: {
+              address: shippingInfo?.address,
+              state: shippingInfo?.state,
+              city: shippingInfo?.city,
+              country: shippingInfo?.country,
+              postCode: shippingInfo?.postCode,
+            },
+            theme: {
+              color: "#61dafb",
+            },
+          };
+
+          const paymentObject = new window.Razorpay(options);
+          paymentObject.open();
+        } else {
+          toast.error("Something Went Wrong");
+        }
+      } catch (error) {
+        console.error(error);
+        toast.error("An error occurred during checkout");
+      }
+      if (!stripe || !elements) {
+        toast.error("Stripe is not properly initialized. Please try again.");
+        return;
+      }
+    } else if (paymentGateway === "stripe") {
+      await handleStripePayment();
+    } else {
+      toast.warn("Please select a payment gateway before placing the order");
+    }
+  };
+
   return (
     <>
       <Meta title={"Checkout"} />
@@ -342,198 +385,195 @@ const CheckOut = () => {
               </p>
               <p className="user-details total">Email: {userState?.email}</p>
               <h4 className="mb-3">Shipping Address</h4>
-              <Elements stripe={stripePromise}>
-                <form
-                  action=""
-                  onSubmit={formik.handleSubmit}
-                  className="d-flex gap-15 flex-wrap justify-content-between"
-                >
-                  <div className="w-100">
-                    <ReactSelect
-                      id="country"
-                      name="country"
-                      label="Country"
-                      options={countries}
-                      value={countries?.find(
-                        (country) => country?.id === formik.values?.country
-                      )}
-                      onChange={(selectedCountry) => {
-                        formik.setFieldValue("country", selectedCountry?.id);
-                        setSelectedCountryIso2(selectedCountry?.iso2);
-                      }}
-                      getOptionLabel={(country) => country?.name}
-                      getOptionValue={(country) => country?.id}
-                      placeholder="Select a country"
-                      onBlur={formik.handleBlur}
-                    />{" "}
-                    {formik.touched.country && formik.errors.country && (
-                      <div className="error ms-2 my-1">
-                        {formik.errors.country}
-                      </div>
+              <form
+                action=""
+                onSubmit={formik.handleSubmit}
+                className="d-flex gap-15 flex-wrap justify-content-between"
+              >
+                <div className="w-100">
+                  <ReactSelect
+                    id="country"
+                    name="country"
+                    label="Country"
+                    options={countries}
+                    value={countries?.find(
+                      (country) => country?.id === formik.values?.country
                     )}
-                  </div>
-                  <div className="flex-grow-1">
-                    <input
-                      type="text"
-                      placeholder="First Name"
-                      className="form-control"
-                      name="firstName"
-                      value={formik.values.firstName}
-                      onChange={formik.handleChange("firstName")}
-                      onBlur={formik.handleBlur("firstName")}
-                    />
+                    onChange={(selectedCountry) => {
+                      formik.setFieldValue("country", selectedCountry?.id);
+                      setSelectedCountryIso2(selectedCountry?.iso2);
+                    }}
+                    getOptionLabel={(country) => country?.name}
+                    getOptionValue={(country) => country?.id}
+                    placeholder="Select a country"
+                    onBlur={formik.handleBlur}
+                  />
+                  {formik.touched.country && formik.errors.country && (
                     <div className="error ms-2 my-1">
-                      {formik.touched.firstName && formik.errors.firstName}
+                      {formik.errors.country}
                     </div>
+                  )}
+                </div>
+                <div className="flex-grow-1">
+                  <input
+                    type="text"
+                    placeholder="First Name"
+                    className="form-control"
+                    name="firstName"
+                    value={formik.values.firstName}
+                    onChange={formik.handleChange("firstName")}
+                    onBlur={formik.handleBlur("firstName")}
+                  />
+                  <div className="error ms-2 my-1">
+                    {formik.touched.firstName && formik.errors.firstName}
                   </div>
-                  <div className="flex-grow-1">
-                    <input
-                      type="text"
-                      placeholder="Last Name"
-                      className="form-control"
-                      name="lastName"
-                      value={formik.values.lastName}
-                      onChange={formik.handleChange("lastName")}
-                      onBlur={formik.handleBlur("lastName")}
-                    />
-                    <div className="error ms-2 my-1">
-                      {formik.touched.lastName && formik.errors.lastName}
-                    </div>
+                </div>
+                <div className="flex-grow-1">
+                  <input
+                    type="text"
+                    placeholder="Last Name"
+                    className="form-control"
+                    name="lastName"
+                    value={formik.values.lastName}
+                    onChange={formik.handleChange("lastName")}
+                    onBlur={formik.handleBlur("lastName")}
+                  />
+                  <div className="error ms-2 my-1">
+                    {formik.touched.lastName && formik.errors.lastName}
                   </div>
-                  <div className="w-100">
-                    <input
-                      type="text"
-                      placeholder="Address"
-                      className="form-control"
-                      name="address"
-                      value={formik.values.address}
-                      onChange={formik.handleChange("address")}
-                      onBlur={formik.handleBlur("address")}
-                    />
-                    <div className="error ms-2 my-1">
-                      {formik.touched.address && formik.errors.address}
-                    </div>
+                </div>
+                <div className="w-100">
+                  <input
+                    type="text"
+                    placeholder="Address"
+                    className="form-control"
+                    name="address"
+                    value={formik.values.address}
+                    onChange={formik.handleChange("address")}
+                    onBlur={formik.handleBlur("address")}
+                  />
+                  <div className="error ms-2 my-1">
+                    {formik.touched.address && formik.errors.address}
                   </div>
-                  <div className="w-100">
-                    <input
-                      type="text"
-                      placeholder="Apartment, Suite, etc."
-                      className="form-control"
-                      name="other"
-                      value={formik.values.other}
-                      onChange={formik.handleChange("other")}
-                      onBlur={formik.handleBlur("other")}
-                    />
-                  </div>
-                  <div className="flex-grow-1">
-                    <ReactSelect
-                      id="state"
-                      name="state"
-                      label="State"
-                      options={states}
-                      value={states?.find(
-                        (state) => state?.id === formik.values.state
-                      )}
-                      onChange={(selectedState) => {
-                        console.log("Selected state:", selectedState);
-                        formik.setFieldValue("state", selectedState?.id);
-                        setSelectedStateIso2(selectedState.iso2);
-                      }}
-                      getOptionLabel={(state) => state?.name}
-                      getOptionValue={(state) => state?.id}
-                      placeholder="Select a state"
-                      onBlur={formik.handleBlur}
-                    />
-                    {formik.touched.state && formik.errors.state && (
-                      <div className="error ms-2 my-1">
-                        {formik.errors.state}
-                      </div>
+                </div>
+                <div className="w-100">
+                  <input
+                    type="text"
+                    placeholder="Apartment, Suite, etc."
+                    className="form-control"
+                    name="other"
+                    value={formik.values.other}
+                    onChange={formik.handleChange("other")}
+                    onBlur={formik.handleBlur("other")}
+                  />
+                </div>
+                <div className="flex-grow-1">
+                  <ReactSelect
+                    id="state"
+                    name="state"
+                    label="State"
+                    options={states}
+                    value={states?.find(
+                      (state) => state?.id === formik.values.state
                     )}
-                  </div>
-                  <div className="flex-grow-1">
-                    <ReactSelect
-                      id="city"
-                      name="city"
-                      label="City"
-                      options={cities}
-                      value={cities?.find(
-                        (city) => city?.id === formik.values.city
-                      )}
-                      onChange={(selectedCity) => {
-                        formik.setFieldValue("city", selectedCity?.id);
-                      }}
-                      getOptionLabel={(city) => city?.name}
-                      getOptionValue={(city) => city?.id}
-                      placeholder="Select a city"
-                      onBlur={formik.handleBlur}
-                    />
-                    {formik.touched.city && formik.errors.city && (
-                      <div className="error ms-2 my-1">
-                        {formik.errors.city}
-                      </div>
+                    onChange={(selectedState) => {
+                      console.log("Selected state:", selectedState);
+                      formik.setFieldValue("state", selectedState?.id);
+                      setSelectedStateIso2(selectedState.iso2);
+                    }}
+                    getOptionLabel={(state) => state?.name}
+                    getOptionValue={(state) => state?.id}
+                    placeholder="Select a state"
+                    onBlur={formik.handleBlur}
+                  />
+                  {formik.touched.state && formik.errors.state && (
+                    <div className="error ms-2 my-1">{formik.errors.state}</div>
+                  )}
+                </div>
+                <div className="flex-grow-1">
+                  <ReactSelect
+                    id="city"
+                    name="city"
+                    label="City"
+                    options={cities}
+                    value={cities?.find(
+                      (city) => city?.id === formik.values.city
                     )}
+                    onChange={(selectedCity) => {
+                      formik.setFieldValue("city", selectedCity?.id);
+                    }}
+                    getOptionLabel={(city) => city?.name}
+                    getOptionValue={(city) => city?.id}
+                    placeholder="Select a city"
+                    onBlur={formik.handleBlur}
+                  />
+                  {formik.touched.city && formik.errors.city && (
+                    <div className="error ms-2 my-1">{formik.errors.city}</div>
+                  )}
+                </div>
+                <div className="flex-grow-1">
+                  <input
+                    type="text"
+                    placeholder="Post Code"
+                    className="form-control"
+                    name="postCode"
+                    value={formik.values.postCode}
+                    onChange={formik.handleChange("postCode")}
+                    onBlur={formik.handleBlur("postCode")}
+                  />
+                  <div className="error ms-2 my-1">
+                    {formik.touched.postCode && formik.errors.postCode}
                   </div>
-
-                  <div className="flex-grow-1">
-                    <input
-                      type="text"
-                      placeholder="Post Code"
-                      className="form-control"
-                      name="postCode"
-                      value={formik.values.postCode}
-                      onChange={formik.handleChange("postCode")}
-                      onBlur={formik.handleBlur("postCode")}
-                    />
-                    <div className="error ms-2 my-1">
-                      {formik.touched.postCode && formik.errors.postCode}
-                    </div>
-                  </div>
-
+                </div>
+                <div>
+                  <h2>Select Payment Gateway</h2>
                   <div>
-                    <h2>Select Payment Gateway</h2>
-                    <div>
-                      <input
-                        type="radio"
-                        id="stripe"
-                        name="paymentGateway"
-                        value="stripe"
-                        onChange={handleChange}
-                      />
-                      <label htmlFor="stripe">Stripe</label>
-                    </div>
-                    <div>
-                      <input
-                        type="radio"
-                        id="razorpay"
-                        name="paymentGateway"
-                        value="razorpay"
-                        onChange={handleChange}
-                      />
-                      <label htmlFor="razorpay">Razorpay</label>
-                    </div>
-
-                    {paymentGateway === "stripe" && <CardForm />}
-                    {paymentGateway === "razorpay" && <OurStore />}
+                    <input
+                      type="radio"
+                      id="stripe"
+                      name="paymentGateway"
+                      value="stripe"
+                      onChange={handleChange}
+                    />
+                    <label htmlFor="stripe">Stripe</label>
                   </div>
+                  <div>
+                    <input
+                      type="radio"
+                      id="razorpay"
+                      name="paymentGateway"
+                      value="razorpay"
+                      onChange={handleChange}
+                    />
+                    <label htmlFor="razorpay">Razorpay</label>
+                  </div>
+                </div>
+                {/* Add the CardElement component here */}
+                {paymentGateway === "stripe" && (
                   <div className="w-100">
-                    <div className="d-flex justify-content-between align-items-center">
-                      <Link className="text-dark" to="/cart">
-                        <IoIosArrowBack className="me-2" /> Return To Cart
-                      </Link>
-                      <Link className="button" to="/products">
-                        Continue to Shipping
-                      </Link>
-                      <button
-                        className="button"
-                        type="submit"
-                        onClick={checkOutHandler}
-                      >
-                        Place Order
-                      </button>
-                    </div>
+                    <h3>Enter Card Details</h3>
+                    <CardElement options={{ hidePostalCode: true }} />
                   </div>
-                </form>
-              </Elements>
+                )}
+                <div className="w-100">
+                  <div className="d-flex justify-content-between align-items-center">
+                    <Link className="text-dark" to="/cart">
+                      <IoIosArrowBack className="me-2" /> Return To Cart
+                    </Link>
+                    <Link className="button" to="/products">
+                      Continue to Shipping
+                    </Link>
+
+                    <button
+                      className="button"
+                      type="submit"
+                      onClick={checkOutHandler}
+                    >
+                      Place Order
+                    </button>
+                  </div>
+                </div>
+              </form>
             </div>
           </div>
           <div className="col-5">

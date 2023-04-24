@@ -69,7 +69,7 @@ const createOrder = async (orderDetail) => {
 
 const checkoutWithStripe = async (stripeData) => {
   const response = await axios.post(
-    `${base_url}order/checkout-stripe`,
+    `${base_url}order/create-stripe-payment`,
     stripeData,
     config
   );

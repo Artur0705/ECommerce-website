@@ -112,7 +112,7 @@ const logout = asyncHandler(async (req, res) => {
   const cookie = req.cookies;
   if (!cookie?.refreshToken)
     throw new Error("No refresh token found in cookies !");
-  const refreshToken = cookie.refreshToken;
+  const refreshToken = cookie?.refreshToken;
   const user = await User.findOne({ refreshToken });
   if (!user) {
     res.clearCookie("refreshToken", {

@@ -295,20 +295,132 @@ const forgotPasswordToken = asyncHandler(async (req, res) => {
       to: email,
       subject: "Password Reset Request",
       html: `
-        <div style="background-color: #f7f7f7; padding: 20px;">
-          <div style="max-width: 600px; margin: 0 auto; background-color: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); padding: 40px;">
-            <h1 style="font-size: 24px; font-weight: 700; color: #444; margin-top: 0;">Reset Your Password</h1>
-            <p style="font-size: 16px; line-height: 1.5; color: #444;">Hi ${user.firstName},</p>
-            <p style="font-size: 16px; line-height: 1.5; color: #444;">We received a request to reset your password. If you did not make this request, you can safely ignore this email.</p>
-            <p style="font-size: 16px; line-height: 1.5; color: #444;">To reset your password, click the button below:</p>
-            <div style="margin-top: 30px; text-align: center;">
-              <a href="${resetURL}" style="display: inline-block; background-color: #007bff; color: #fff; padding: 15px 30px; border-radius: 5px; font-size: 16px; font-weight: 700; text-decoration: none;">Reset Password</a>
+      <html>
+        <head>
+          <style>
+            @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap");
+            body {
+              margin: 0;
+              padding: 0;
+              font-family: 'Montserrat', sans-serif;
+            }
+            .container {
+              max-width: 600px;
+              margin: 0 auto;
+            }
+            .header {
+              background-color: #007bff;
+              color: #fff;
+              padding: 20px;
+              text-align: center;
+            }
+            .title {
+              font-size: 24px;
+              font-weight: 700;
+              margin-top: 0;
+              margin-bottom: 10px;
+            }
+            
+            .body {
+              background-color: #f7f7f7;
+              padding: 20px;
+              border-radius: 8px;
+              box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+              margin-top: 20px;
+              margin-bottom: 20px;
+            }
+            .message {
+              font-size: 16px;
+              line-height: 1.5;
+              color: #444;
+              margin-bottom: 20px;
+            }
+            
+            .support {
+              font-size: 16px;
+              line-height: 1.5;
+              color: #444;
+            }
+            .footer {
+              font-size: 14px;
+              font-weight: 400;
+              color: #666;
+              text-align: center;
+              margin-top: 30px;
+              margin-bottom: 0;
+            }
+            .button{
+              align-items: center;
+              background-image: linear-gradient(144deg,#AF40FF, #5B42F3 50%,#00DDEB);
+              border: 0;
+              border-radius: 8px;
+              box-shadow: rgba(151, 65, 252, 0.2) 0 15px 30px -5px;
+              box-sizing: border-box;
+              color: #FFFFFF !important;
+              display: flex;
+              font-family: Phantomsans, sans-serif;
+              font-size: 20px;
+              justify-content: center;
+              line-height: 1em;
+              max-width: 100%;
+              min-width: 140px;
+              padding: 3px;
+              text-decoration: none;
+              user-select: none;
+              -webkit-user-select: none;
+              touch-action: manipulation;
+              white-space: nowrap;
+              cursor: pointer;
+            }
+            
+            .button:active,
+            .button:hover {
+              outline: 0;
+            }
+            
+            .button span {
+              background-color: rgb(5, 6, 45);
+              padding: 16px 24px;
+              border-radius: 6px;
+              width: 100%;
+              height: 100%;
+              transition: 300ms;
+            }
+            
+            .button:hover span {
+              background: none;
+            }
+            
+            @media (min-width: 768px) {
+              .button {
+                font-size: 24px;
+                min-width: 196px;
+              }
+            }
+            
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <img src="https://www.ithinktech.uz/static/media/logo.e63106f39e29efce6fe8.png" alt="Logo" style="height: 50px; margin-bottom: 10px;">
+              <h1 class="title">Reset Your Password</h1>
             </div>
-            <p style="font-size: 16px; line-height: 1.5; color: #444;">This link is valid for the next 10 minutes.</p>
-            <p style="font-size: 16px; line-height: 1.5; color: #444;">If you have any questions or need further assistance, please contact our support team at info@ithinktech.com.</p>
+            <div class="body">
+              <p class="message">Hi ${user.firstName},</p>
+              <p class="message">We received a request to reset your password. If you did not make this request, you can safely ignore this email.</p>
+              <p class="message">To reset your password, click the button below:</p>
+              <div style="text-align: center;">
+                <a href="${resetURL}" class="button" role="button"><span class="text">Reset Password</span></a>
+              </div>
+              <p class="message">This link is valid for the next 10 minutes.</p>
+            </div>
+            <p class="support">If you have any questions or need further assistance, please contact our support team at <a href="mailto:info@ithinktech.com">info@ithinktech.com</a>.</p>
+            <p class="footer">This email was sent by iThinkTech Inc., 123 Collins str. Melbourne,Victoria,3000</p>
           </div>
-        </div>
-      `,
+        </body>
+      </html>
+    `,
     };
     sendEmail(data);
     res.json(token);

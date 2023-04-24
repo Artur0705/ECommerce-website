@@ -31,6 +31,7 @@ const Profile = () => {
   const dispatch = useDispatch();
   const userState = useSelector((state) => state?.auth?.user);
   const [edit, setEdit] = useState(true);
+  const [editPassowrd, setEditPassword] = useState(true);
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: {
@@ -45,6 +46,7 @@ const Profile = () => {
     onSubmit: (values) => {
       dispatch(updateProfile(values));
       setEdit(true);
+      setEditPassword(true);
     },
   });
 
@@ -134,26 +136,6 @@ const Profile = () => {
                 </div>
               </div>
 
-              {/* <div className="mb-5">
-                <label htmlFor="exampleInputPassword" className="form-label">
-                  Password
-                </label>
-                <input
-                  type="text"
-                  name="password"
-                  className="form-control"
-                  disabled={edit}
-                  id="exampleInputPassword"
-                  aria-describedby="passwordHelp"
-                  value={formik.values.password}
-                  onChange={formik.handleChange("password")}
-                  onBlur={formik.handleBlur("password")}
-                />
-                <div className="error">
-                  {formik.touched.password && formik.errors.password}
-                </div>
-              </div> */}
-
               <div className="mb-5">
                 <label htmlFor="exampleInputMobile" className="form-label">
                   Mobile Number
@@ -182,7 +164,7 @@ const Profile = () => {
             </form>
             <div className="d-flex justify-content-between align-items-center">
               <h3 className="my-3">Update Password</h3>
-              <CiEdit className="fs-3" onClick={() => setEdit(false)} />
+              <CiEdit className="fs-3" onClick={() => setEditPassword(false)} />
             </div>
             <form onSubmit={formikPassword.handleSubmit}>
               <div className="mb-3">
@@ -193,7 +175,7 @@ const Profile = () => {
                   type="password"
                   name="currentPassword"
                   className="form-control"
-                  disabled={edit}
+                  disabled={editPassowrd}
                   id="currentPassword"
                   value={formikPassword.values.currentPassword}
                   onChange={formikPassword.handleChange("currentPassword")}
@@ -213,7 +195,7 @@ const Profile = () => {
                   type="password"
                   name="newPassword"
                   className="form-control"
-                  disabled={edit}
+                  disabled={editPassowrd}
                   id="newPassword"
                   value={formikPassword.values.newPassword}
                   onChange={formikPassword.handleChange("newPassword")}
@@ -233,7 +215,7 @@ const Profile = () => {
                   type="password"
                   name="confirmNewPassword"
                   className="form-control"
-                  disabled={edit}
+                  disabled={editPassowrd}
                   id="confirmNewPassword"
                   value={formikPassword.values.confirmNewPassword}
                   onChange={formikPassword.handleChange("confirmNewPassword")}
@@ -245,7 +227,7 @@ const Profile = () => {
                 </div>
               </div>
 
-              {edit === false && (
+              {editPassowrd === false && (
                 <button type="submit" className="btn btn-primary mb-5">
                   Update Password
                 </button>

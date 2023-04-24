@@ -290,12 +290,25 @@ const forgotPasswordToken = asyncHandler(async (req, res) => {
   try {
     const token = await user.createPasswordResetToken();
     await user.save();
-    const resetURL = `Hi ${user.firstName}, <br> There was a request to change your password! <br> If you did not make this request then please ignore this email. <br> Otherwise, please follow this  <a href='http://localhost:8000/api/user/reset-password/${token}'>Link</a>  to reset your pasword. <br> This link is valid till 10 minutes from now.`;
+    const resetURL = `http://localhost:3000/reset-password/${token}`;
     const data = {
       to: email,
-      text: resetURL,
-      subject: "Password Reset Enquiry",
-      html: resetURL,
+      subject: "Password Reset Request",
+      html: `
+        <div style="background-color: #f7f7f7; padding: 20px;">
+          <div style="max-width: 600px; margin: 0 auto; background-color: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); padding: 40px;">
+            <h1 style="font-size: 24px; font-weight: 700; color: #444; margin-top: 0;">Reset Your Password</h1>
+            <p style="font-size: 16px; line-height: 1.5; color: #444;">Hi ${user.firstName},</p>
+            <p style="font-size: 16px; line-height: 1.5; color: #444;">We received a request to reset your password. If you did not make this request, you can safely ignore this email.</p>
+            <p style="font-size: 16px; line-height: 1.5; color: #444;">To reset your password, click the button below:</p>
+            <div style="margin-top: 30px; text-align: center;">
+              <a href="${resetURL}" style="display: inline-block; background-color: #007bff; color: #fff; padding: 15px 30px; border-radius: 5px; font-size: 16px; font-weight: 700; text-decoration: none;">Reset Password</a>
+            </div>
+            <p style="font-size: 16px; line-height: 1.5; color: #444;">This link is valid for the next 10 minutes.</p>
+            <p style="font-size: 16px; line-height: 1.5; color: #444;">If you have any questions or need further assistance, please contact our support team at info@ithinktech.com.</p>
+          </div>
+        </div>
+      `,
     };
     sendEmail(data);
     res.json(token);

@@ -10,7 +10,11 @@ import { IoIosGitCompare } from "react-icons/io";
 import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 import Container from "../components/Container";
 import { useDispatch, useSelector } from "react-redux";
-import { getAProduct } from "../features/products/productSlice";
+import {
+  addRating,
+  getAProduct,
+  getAllProducts,
+} from "../features/products/productSlice";
 import { addToWishList } from "../features/products/productSlice";
 import { toast } from "react-toastify";
 import { addProdCart, getUserCart } from "../features/user/userSlice";
@@ -23,6 +27,7 @@ const SingleProduct = () => {
     (state) => state?.product?.singleProduct
   );
   const productState = useSelector((state) => state?.product?.product);
+  const userState = useSelector((state) => state?.auth?.user);
   const [color, setColor] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [alreadyAdded, setAlreadeyAdded] = useState(false);
@@ -71,10 +76,15 @@ const SingleProduct = () => {
 
   const getProductId = location.pathname.split("/")[2];
 
-  useEffect(() => {
-    dispatch(getAProduct(getProductId));
-    dispatch(getUserCart());
-  }, [dispatch, getProductId]);
+  useEffect(
+    () => {
+      dispatch(getAProduct(getProductId));
+      dispatch(getUserCart());
+      dispatch(getAllProducts());
+    },
+    //eslint-disable-next-line
+    []
+  );
 
   useEffect(() => {
     for (let index = 0; index < cartState?.length; index++) {
@@ -83,7 +93,7 @@ const SingleProduct = () => {
       }
     }
     //eslint-disable-next-line
-  }, [cartState, getProductId]);
+  }, []);
 
   const addCart = () => {
     if (color === null) {
@@ -119,7 +129,6 @@ const SingleProduct = () => {
     document.execCommand("copy");
     textField.remove();
   };
-  // const closeModal = () => {};
 
   const [popularProduct, setPopularProduct] = useState([]);
   useEffect(() => {
@@ -132,10 +141,30 @@ const SingleProduct = () => {
       setPopularProduct(data);
     }
   }, [productState]);
+
+  const [star, setStar] = useState(null);
+  const [comment, setComment] = useState(null);
+  const addRatingToProduct = () => {
+    if (star === null) {
+      toast.error("Please Choose Stars");
+      return false;
+    } else if (comment === null) {
+      toast.error("Please Write Review");
+      return false;
+    } else {
+      dispatch(
+        addRating({ star: star, comment: comment, prodId: getProductId })
+      );
+      setTimeout(() => {
+        dispatch(getAProduct(getProductId));
+      }, 400);
+    }
+  };
+
   return (
     <>
       <Meta title={"Product name"} />
-      <BreadCrumb title="Product name" />
+      <BreadCrumb title={singleProductState?.title} />
 
       <Container class1="main-product-wrapper py-5 home-wrapper-2">
         <div className="row">
@@ -370,51 +399,66 @@ const SingleProduct = () => {
               </div>
               <div className="review-form py-4">
                 <h4>Write a review</h4>
-                <form action="" className="d-flex flex-column gap-15">
-                  <div>
-                    <ReactStars
-                      count={5}
-                      size={24}
-                      value={4}
-                      edit={true}
-                      activeColor="#ffd700"
-                    />
-                  </div>
 
-                  <div>
-                    <textarea
-                      name=""
-                      id=""
-                      className="w-100 form-control"
-                      cols="30"
-                      rows="4"
-                      placeholder="Comments"
-                    ></textarea>
-                  </div>
-                  <div className="d-flex justify-content-end">
-                    <button className="button border-0">Submit Review</button>
-                  </div>
-                </form>
+                <div>
+                  <ReactStars
+                    count={5}
+                    size={24}
+                    value={0}
+                    edit={true}
+                    activeColor="#ffd700"
+                    onChange={(e) => {
+                      setStar(e);
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <textarea
+                    name=""
+                    id=""
+                    className="w-100 form-control"
+                    cols="30"
+                    rows="4"
+                    placeholder="Comments"
+                    onChange={(e) => {
+                      setComment(e.target.value);
+                    }}
+                  ></textarea>
+                </div>
+                <div className="d-flex justify-content-end mt-3">
+                  <button
+                    onClick={addRatingToProduct}
+                    className="button border-0"
+                    type="button"
+                  >
+                    Submit Review
+                  </button>
+                </div>
               </div>
               <div className="reviews mt-4">
-                <div className="review ">
-                  <div className="d-flex gap-10 align-items-center">
-                    <h6 className="mb-0">Artur</h6>
-                    <ReactStars
-                      count={5}
-                      size={24}
-                      value={4}
-                      edit={false}
-                      activeColor="#ffd700"
-                    />
-                  </div>
-                  <p className="mt-3">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                    Quod nam asperiores ipsam deserunt fugiat quae dicta nisi,
-                    eveniet, dignissimos eius autem ullam, pariatur praesentium
-                    a explicabo nulla eos ratione eum?
-                  </p>
-                </div>
+                {singleProductState &&
+                  singleProductState?.ratings?.map((item, index) => {
+                    return (
+                      <div key={index} className="review ">
+                        <div className="d-flex gap-10 align-items-center">
+                          <h6 className="mb-0">
+                            {item?.postedby?.firstName +
+                              " " +
+                              item?.postedby?.lastName}
+                          </h6>
+                          <ReactStars
+                            count={5}
+                            size={24}
+                            value={item?.star}
+                            edit={false}
+                            activeColor="#ffd700"
+                          />
+                        </div>
+                        <p className="mt-3">{item?.comment}</p>
+                      </div>
+                    );
+                  })}
               </div>
             </div>
           </div>
@@ -430,65 +474,6 @@ const SingleProduct = () => {
           <ProductCard data={popularProduct} />
         </div>
       </Container>
-
-      <div
-        className="modal fade"
-        // id="staticBackdrop"
-        // data-bs-backdrop="static"
-        // data-bs-keyboard="false"
-        // tabIndex="-1"
-        // aria-labelledby="staticBackdropLabel"
-        // aria-hidden="true"
-      >
-        <div className="modal-dialog modal-dialog-centered ">
-          <div className="modal-content">
-            <div className="modal-header py-0 border-0">
-              {/* <button
-                type="button"
-                className="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-              ></button> */}
-            </div>
-            <div className="modal-body py-0">
-              <div className="d-flex align-items-center">
-                {/* <div className="flex-grow-1 w-50">
-                  <img
-                    src={singleProductState?.images?.[0]?.url}
-                    className="img-fluid"
-                    alt="product imgae"
-                  />
-                </div> */}
-                <div className="d-flex flex-column flex-grow-1 w-50">
-                  <h6 className="mb-3">Apple Watch</h6>
-                  <p className="mb-1">Quantity: asgfd</p>
-                  <p className="mb-1">Color: asgfd</p>
-                  <p className="mb-1">Size: asgfd</p>
-                </div>
-              </div>
-            </div>
-            {/* <div className="modal-footer border-0 py-0 justify-content-center gap-30">
-              <button type="button" className="button" data-bs-dismiss="modal">
-                View My Cart
-              </button>
-              <button type="button" className="button signup">
-                Checkout
-              </button>
-            </div> */}
-            <div className="d-flex justify-content-center py-3">
-              <Link
-                className="text-dark"
-                to="/product"
-                // onClick={() => {
-                //   closeModal();
-                // }}
-              >
-                Continue To Shopping
-              </Link>
-            </div>
-          </div>
-        </div>
-      </div>
     </>
   );
 };

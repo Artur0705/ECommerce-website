@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { NavLink, Link, useNavigate } from "react-router-dom";
 import { BsSearch } from "react-icons/bs";
-import compare from "../images/compare.svg";
 import wishlist from "../images/wishlist.svg";
 import user from "../images/user.svg";
 import cart from "../images/cart.svg";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Typeahead } from "react-bootstrap-typeahead";
 import "react-bootstrap-typeahead/css/Typeahead.css";
+import { getAProduct } from "../features/products/productSlice";
 
 const Header = () => {
   const cartState = useSelector((state) => state?.auth?.cartProducts);
@@ -17,7 +17,7 @@ const Header = () => {
   const [total, setTotal] = useState(null);
   const [paginate, setPaginate] = useState(true);
   const navigate = useNavigate();
-  const [typeaheadKey, setTypeaheadKey] = useState(0);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     let sum = 0;
@@ -40,6 +40,7 @@ const Header = () => {
 
   const handleLogout = () => {
     localStorage.clear();
+    navigate("/");
     window.location.reload();
   };
   return (
@@ -76,12 +77,11 @@ const Header = () => {
             <div className="col-5">
               <div className="input-group">
                 <Typeahead
-                  key={typeaheadKey}
                   id="pagination-example"
                   onPaginate={() => console.log("Results paginated")}
                   onChange={(selected) => {
                     navigate(`/products/${selected[0]?.prod}`);
-                    setTypeaheadKey(typeaheadKey + 1);
+                    dispatch(getAProduct(selected[0]?.prod));
                   }}
                   options={productOpt}
                   paginate={paginate}
@@ -97,7 +97,7 @@ const Header = () => {
             <div className="col-5">
               <div className="header-upper-links d-flex align-items-center justify-content-between">
                 <div>
-                  <Link
+                  {/* <Link
                     to={"/compare-product"}
                     className="d-flex align-items-center gap-10 text-white"
                   >
@@ -105,7 +105,7 @@ const Header = () => {
                     <p className="mb-0">
                       Compare <br /> Products
                     </p>
-                  </Link>
+                  </Link> */}
                 </div>
                 <div>
                   <Link

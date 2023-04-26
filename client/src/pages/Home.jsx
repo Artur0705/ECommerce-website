@@ -11,8 +11,6 @@ import moment from "moment";
 import { getAllProducts } from "../features/products/productSlice";
 import ReactStars from "react-rating-stars-component";
 import { Link, useNavigate } from "react-router-dom";
-import prodcompare from "../images/prodcompare.svg";
-import addcart from "../images/add-cart.svg";
 import view from "../images/view.svg";
 import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 import { addToWishList } from "../features/products/productSlice";
@@ -313,17 +311,11 @@ const Home = () => {
                       <div className="action-bar position-absolute">
                         <div className="d-flex flex-column gap-15">
                           <button className="border-0 bg-transparent">
-                            <img src={prodcompare} alt="compare" />
-                          </button>
-                          <button className="border-0 bg-transparent">
                             <img
                               onClick={() => navigate(`/products/${item?._id}`)}
                               src={view}
                               alt="view"
                             />
-                          </button>
-                          <button className="border-0 bg-transparent">
-                            <img src={addcart} alt="addcart" />
                           </button>
                         </div>
                       </div>
@@ -493,9 +485,9 @@ const Home = () => {
                       </div>
                       <div className="action-bar position-absolute">
                         <div className="d-flex flex-column gap-15">
-                          <button className="border-0 bg-transparent">
+                          {/* <button className="border-0 bg-transparent">
                             <img src={prodcompare} alt="compare" />
-                          </button>
+                          </button> */}
                           <button className="border-0 bg-transparent">
                             <img
                               onClick={() => navigate(`/products/${item?._id}`)}
@@ -503,9 +495,9 @@ const Home = () => {
                               alt="view"
                             />
                           </button>
-                          <button className="border-0 bg-transparent">
+                          {/* <button className="border-0 bg-transparent">
                             <img src={addcart} alt="addcart" />
-                          </button>
+                          </button> */}
                         </div>
                       </div>
                     </div>

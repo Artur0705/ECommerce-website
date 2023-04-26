@@ -2,8 +2,6 @@ import React, { useEffect, useState } from "react";
 import ReactStars from "react-rating-stars-component";
 import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import prodcompare from "../images/prodcompare.svg";
-import addcart from "../images/add-cart.svg";
 import view from "../images/view.svg";
 import { useDispatch } from "react-redux";
 import { addToWishList } from "../features/products/productSlice";
@@ -116,9 +114,9 @@ const ProductCard = (props) => {
               </div>
               <div className="action-bar position-absolute">
                 <div className="d-flex flex-column gap-15">
-                  <button className="border-0 bg-transparent">
+                  {/* <button className="border-0 bg-transparent">
                     <img src={prodcompare} alt="compare" />
-                  </button>
+                  </button> */}
                   <button className="border-0 bg-transparent">
                     <img
                       onClick={() => navigate(`/products/${item?._id}`)}
@@ -126,9 +124,9 @@ const ProductCard = (props) => {
                       alt="view"
                     />
                   </button>
-                  <button className="border-0 bg-transparent">
+                  {/* <button className="border-0 bg-transparent">
                     <img src={addcart} alt="addcart" />
-                  </button>
+                  </button> */}
                 </div>
               </div>
             </div>

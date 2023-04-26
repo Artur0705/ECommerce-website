@@ -35,6 +35,17 @@ export const addToWishList = createAsyncThunk(
   }
 );
 
+export const addRating = createAsyncThunk(
+  "product/rating",
+  async (data, thunkAPI) => {
+    try {
+      return await productService.rateProduct(data);
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error);
+    }
+  }
+);
+
 const productState = {
   product: "",
   isError: false,
@@ -90,6 +101,28 @@ export const productSlice = createSlice({
         state.message = "Product Added to Wishlist";
       })
       .addCase(addToWishList.rejected, (state, action) => {
+        state.isError = true;
+        state.isLoading = false;
+        state.isSuccess = false;
+        state.message = action.error;
+        if (state.isError === true) {
+          toast.error("Something Went Wrong ");
+        }
+      })
+      .addCase(addRating.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(addRating.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isError = false;
+        state.isSuccess = true;
+        state.rating = action.payload;
+        state.message = "Rating Added Successfully";
+        if (state.isSuccess === true) {
+          toast.success("Review Added Successfully");
+        }
+      })
+      .addCase(addRating.rejected, (state, action) => {
         state.isError = true;
         state.isLoading = false;
         state.isSuccess = false;

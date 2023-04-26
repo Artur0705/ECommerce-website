@@ -71,13 +71,10 @@ const SingleProduct = () => {
 
   const getProductId = location.pathname.split("/")[2];
 
-  useEffect(
-    () => {
-      dispatch(getAProduct(getProductId));
-      dispatch(getUserCart());
-    }, //eslint-disable-next-line
-    []
-  );
+  useEffect(() => {
+    dispatch(getAProduct(getProductId));
+    dispatch(getUserCart());
+  }, [dispatch, getProductId]);
 
   useEffect(() => {
     for (let index = 0; index < cartState?.length; index++) {
@@ -86,7 +83,7 @@ const SingleProduct = () => {
       }
     }
     //eslint-disable-next-line
-  }, []);
+  }, [cartState, getProductId]);
 
   const addCart = () => {
     if (color === null) {

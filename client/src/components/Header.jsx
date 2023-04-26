@@ -17,6 +17,7 @@ const Header = () => {
   const [total, setTotal] = useState(null);
   const [paginate, setPaginate] = useState(true);
   const navigate = useNavigate();
+  const [typeaheadKey, setTypeaheadKey] = useState(0);
 
   useEffect(() => {
     let sum = 0;
@@ -75,10 +76,12 @@ const Header = () => {
             <div className="col-5">
               <div className="input-group">
                 <Typeahead
+                  key={typeaheadKey}
                   id="pagination-example"
                   onPaginate={() => console.log("Results paginated")}
                   onChange={(selected) => {
                     navigate(`/products/${selected[0]?.prod}`);
+                    setTypeaheadKey(typeaheadKey + 1);
                   }}
                   options={productOpt}
                   paginate={paginate}

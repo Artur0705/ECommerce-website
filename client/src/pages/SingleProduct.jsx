@@ -120,6 +120,18 @@ const SingleProduct = () => {
     textField.remove();
   };
   // const closeModal = () => {};
+
+  const [popularProduct, setPopularProduct] = useState([]);
+  useEffect(() => {
+    let data = [];
+    for (let index = 0; index < productState?.length; index++) {
+      const element = productState[index];
+      if (element?.tags === "popular") {
+        data.push(element);
+      }
+      setPopularProduct(data);
+    }
+  }, [productState]);
   return (
     <>
       <Meta title={"Product name"} />
@@ -415,7 +427,7 @@ const SingleProduct = () => {
           </div>
         </div>
         <div className="row">
-          <ProductCard />
+          <ProductCard data={popularProduct} />
         </div>
       </Container>
 

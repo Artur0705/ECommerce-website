@@ -8,6 +8,8 @@ const getProducts = async (data) => {
       data?.tag ? `tags=${data?.tag}&&` : ""
     }${data?.category ? `category=${data?.category}&&` : ""}${
       data?.minPrice ? `price[gte]=${data?.minPrice}&&` : ""
+    }${
+      data?.maxPrice ? `price[lte]=${data?.maxPrice}&&` : ""
     }${data?.sort ? `sort=${data?.sort}&&` : ""}`
   );
   if (response.data) {

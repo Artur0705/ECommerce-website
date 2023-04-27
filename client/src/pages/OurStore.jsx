@@ -114,7 +114,7 @@ const OurStore = () => {
                 </div>
               </div>
               <div className="mb-3">
-                <h3 className="sub-title">Product Brnads</h3>
+                <h3 className="sub-title">Product Brands</h3>
                 <div>
                   <div className="product-tags d-flex flex-wrap align-items-center gap-10">
                     {brands &&

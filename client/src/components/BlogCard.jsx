@@ -11,19 +11,19 @@ const BlogCard = (props) => {
           src={image ? image : blog1}
           className="img-fluid w-100"
           alt="blog"
-          style={{ height: "300px", width: "300px" }}
+          style={{ height: "auto", width: "100%" }}
         />
       </div>
       <div className="blog-content">
         <p className="date">{date}</p>
         <h5 className="title">{title}</h5>
         <p
-          className="desc"
+          className="desc text-truncate"
           dangerouslySetInnerHTML={{
             __html: description?.substr(0, 30) + "...",
           }}
         ></p>
-        <Link to={"/blog/" + id} className="button">
+        <Link to={"/blog/" + id} className="btn btn-primary btn-sm read-more">
           Read More
         </Link>
       </div>

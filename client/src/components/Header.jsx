@@ -3,11 +3,12 @@ import { NavLink, Link, useNavigate } from "react-router-dom";
 import { BsSearch } from "react-icons/bs";
 import wishlist from "../images/wishlist.svg";
 import user from "../images/user.svg";
+import compare from "../images/compare.svg";
 import cart from "../images/cart.svg";
 import { useDispatch, useSelector } from "react-redux";
 import { Typeahead } from "react-bootstrap-typeahead";
 import "react-bootstrap-typeahead/css/Typeahead.css";
-import { getAProduct } from "../features/products/productSlice";
+import { getAProduct, getAllProducts } from "../features/products/productSlice";
 
 const Header = () => {
   const cartState = useSelector((state) => state?.auth?.cartProducts);
@@ -16,8 +17,33 @@ const Header = () => {
   const [productOpt, setProductOpt] = useState([]);
   const [total, setTotal] = useState(null);
   const [paginate, setPaginate] = useState(true);
+  const [category, setCategory] = useState(null);
+  console.log(category);
+  const [categories, setCategories] = useState([]);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    let category = [];
+    for (let index = 0; index < productState?.length; index++) {
+      const element = productState[index];
+      category.push(element.category);
+    }
+    setCategories(category);
+  }, [productState]);
+
+  useEffect(() => {
+    getProducts();
+  }, [category]);
+
+  const getProducts = () => {
+    dispatch(getAllProducts({ category }));
+  };
+
+  const handleCategorySelection = (item) => {
+    navigate(`/products?category=${item}`);
+    setCategory(item);
+  };
 
   useEffect(() => {
     let sum = 0;
@@ -97,6 +123,15 @@ const Header = () => {
             <div className="col-5">
               <div className="header-upper-links d-flex align-items-center justify-content-between">
                 <div>
+                    <Link
+                    to={"/compare-product"}
+                    className="d-flex align-items-center gap-10 text-white"
+                  >
+                    <img src={compare} alt="compare" />
+                    <p className="mb-0">
+                      Compare <br /> Products
+                    </p>
+                  </Link> 
                 </div>
                 <div>
                   <Link
@@ -164,28 +199,28 @@ const Header = () => {
                       aria-expanded="false"
                     >
                       <span className="text-white me-5 d-inline-block">
-                        Shop Categorie
+                        Shop Categories
                       </span>
                     </button>
                     <ul
                       className="dropdown-menu"
                       aria-labelledby="dropdownMenuButton1"
                     >
-                      <li>
-                        <Link className="dropdown-item text-white" to={"/"}>
-                          Action
-                        </Link>
-                      </li>
-                      <li>
-                        <Link className="dropdown-item text-white" to={"/"}>
-                          Another action
-                        </Link>
-                      </li>
-                      <li>
-                        <Link className="dropdown-item text-white" to={"/"}>
-                          Something else here
-                        </Link>
-                      </li>
+                      {categories &&
+                        [...new Set(categories)]?.map((item, index) => {
+                          return (
+                            <ul key={index}>
+                              <li 
+                                className="dropdown-item text-white"
+                                onClick={() => handleCategorySelection(item)}
+                                style={{ cursor: "pointer" }}
+                              >
+                                
+                                {item}
+                              </li>
+                            </ul>
+                          );
+                        })}
                     </ul>
                   </div>
                 </div>

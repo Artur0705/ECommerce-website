@@ -14,7 +14,6 @@ const profileSchema = yup.object({
     .string()
     .email("Email Should Be Valid")
     .required("Email Address is Required"),
-  //   password: yup.string().required("Password Number is Required"),
   mobile: yup.number().required("Mobile Number is Required"),
 });
 
@@ -46,7 +45,6 @@ const Profile = () => {
     onSubmit: (values) => {
       dispatch(updateProfile(values));
       setEdit(true);
-      setEditPassword(true);
     },
   });
 
@@ -59,6 +57,7 @@ const Profile = () => {
     validationSchema: passwordSchema,
     onSubmit: (values) => {
       dispatch(updatePassword(values));
+      setEditPassword(true);
     },
   });
 

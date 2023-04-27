@@ -27,7 +27,6 @@ const SingleProduct = () => {
     (state) => state?.product?.singleProduct
   );
   const productState = useSelector((state) => state?.product?.product);
-  const userState = useSelector((state) => state?.auth?.user);
   const [color, setColor] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [alreadyAdded, setAlreadeyAdded] = useState(false);
@@ -117,7 +116,7 @@ const SingleProduct = () => {
     zoomPosition: "original",
     img: singleProductState?.images?.[0]?.url
       ? singleProductState?.images?.[0]?.url
-      : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRuQTAUMn4XWRpmEiXZmABDpBvL40ydiMEtlSZrrX1R1kO4fPNbnN_k&usqp=CAE&s",
+      : "https://blog.teamtreehouse.com/wp-content/uploads/2015/05/InternetSlowdown_Day.gif",
   };
   // eslint-disable-next-line
   const [orderedProduct, setOrderedProduct] = useState(true);
@@ -231,27 +230,6 @@ const SingleProduct = () => {
                   <h3 className="product-heading">Tags :</h3>
                   <p className="product-data">{singleProductState?.tags}</p>
                 </div>
-                <div className="d-flex gap-10 align-items-center my-2">
-                  <h3 className="product-heading">Availability :</h3>
-                  <p className="product-data">In Stock</p>
-                </div>
-                <div className="d-flex gap-10 flex-column mt-2 mb-3">
-                  <h3 className="product-heading">Size :</h3>
-                  <div className="d-flex flex-wrap gap-15">
-                    <span className="badge border border-1 bg-white text-dark color-secondary">
-                      S
-                    </span>
-                    <span className="badge border border-1 bg-white text-dark color-secondary">
-                      M
-                    </span>
-                    <span className="badge border border-1 bg-white text-dark color-secondary">
-                      XL
-                    </span>
-                    <span className="badge border border-1 bg-white text-dark color-secondary">
-                      XXL
-                    </span>
-                  </div>
-                </div>
                 {alreadyAdded === false && (
                   <>
                     <div className="d-flex gap-10 flex-column mt-2 mb-3">
@@ -291,8 +269,6 @@ const SingleProduct = () => {
                   >
                     <button
                       className="button border-0"
-                      // data-bs-toggle="modal"
-                      // data-bs-target="#staticBackdrop"
                       type="button"
                       onClick={() => {
                         alreadyAdded
@@ -302,7 +278,6 @@ const SingleProduct = () => {
                     >
                       {alreadyAdded ? "Go To Cart" : "Add To Cart"}
                     </button>
-                    {/* <button className="button signup">Buy It Now</button> */}
                   </div>
                 </div>
                 <div className="d-flex align-items-center gap-15">

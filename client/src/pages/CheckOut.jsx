@@ -13,7 +13,7 @@ import { base_url } from "../utils/axiosConfig";
 import { config } from "../utils/axiosConfig";
 import { createAnOrder } from "../features/user/userSlice";
 import { toast } from "react-toastify";
-import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
+import { useStripe } from "@stripe/react-stripe-js";
 
 const shippingSchema = yup.object({
   firstName: yup.string().required("First Name is Required"),
@@ -41,7 +41,6 @@ const CheckOut = () => {
   const [selectedStateIso2, setSelectedStateIso2] = useState(null);
   const [loading, setLoading] = useState(false);
   const stripe = useStripe();
-  const elements = useElements();
 
   const [paymentGateway, setPaymentGateway] = useState("");
 
@@ -200,142 +199,158 @@ const CheckOut = () => {
     setCartProductState(items);
     // eslint-disable-next-line
   }, []);
+  console.log("cartState:", cartState); // Add this line
 
   const handleStripePayment = async () => {
     setLoading(true);
     try {
+      const cartItems = cartState?.map((item) => ({
+        productTitle: item?.productId?.title,
+        price: item?.productId?.price,
+        productImage: item?.productId?.images[0]?.url,
+        quantity: item?.quantity,
+      }));
+      console.log("cartItems before sending:", cartItems); // Add this line
+
       const response = await axios.post(
-        `${base_url}user/order/create-stripe-payment`,
-        { amount: totalAmount + 15 },
+        `${base_url}user/order/create-stripe-checkout-session`,
+        { cartItems, shippingInfo: shippingInfo },
         config
       );
-      const clientSecret = response.data.client_secret;
+      const sessionId = response.data.session_id;
 
-      const { error } = await stripe.confirmCardPayment(clientSecret, {
-        payment_method: {
-          card: elements.getElement(CardElement),
-        },
+      const { error } = await stripe.redirectToCheckout({
+        sessionId: sessionId,
       });
 
       if (error) {
         console.error("Error:", error);
         toast.error("Payment failed. Please try again.");
         setLoading(false);
-      } else {
-        console.log("Payment successful");
-        toast.success("Payment successful");
-        setLoading(false);
       }
     } catch (error) {
       console.error("Error:", error);
-      toast.error("Payment failed. Please try again ape.");
+      toast.error("Payment failed. Please try again.");
       setLoading(false);
     }
   };
+
   const checkOutHandler = async () => {
-    if (paymentGateway === "razorpay") {
-      try {
-        const res = await loadScript(
-          "https://checkout.razorpay.com/v1/checkout.js"
-        );
-        if (!res) {
-          toast.error("RazorPay SDK failed to Load");
+    if (formik.isValid && paymentGateway) {
+      if (paymentGateway === "razorpay") {
+        try {
+          const res = await loadScript(
+            "https://checkout.razorpay.com/v1/checkout.js"
+          );
+          if (!res) {
+            toast.error("RazorPay SDK failed to Load");
+            return;
+          }
+
+          const result = await axios.post(
+            `${base_url}user/order/checkout`,
+            { amount: totalAmount + 15 },
+            config
+          );
+
+          if (result && result.data && result.data.order) {
+            const { amount, id: order_id, currency } = result.data.order;
+            const options = {
+              key: process.env.REACT_APP_KEY_ID,
+              amount: amount,
+              currency: currency,
+              name: shippingInfo?.firstName + " " + shippingInfo?.lastName,
+              description: "Test Transaction",
+              order_id: order_id,
+              handler: async function (response) {
+                try {
+                  const data = {
+                    orderCreationId: order_id,
+                    razorpayPaymentId: response?.razorpay_payment_id,
+                    razorpayOrderId: response?.razorpay_order_id,
+                  };
+                  console.log("Payment data:", data);
+
+                  const result = await axios.post(
+                    `${base_url}user/order/paymentverification`,
+                    data,
+                    config
+                  );
+                  console.log("Payment verification result:", result);
+
+                  if (result && result?.data) {
+                    dispatch(
+                      createAnOrder({
+                        totalPrice: totalAmount,
+                        totalPriceAfterDiscount: totalAmount,
+                        orderItems: cartProductState,
+                        paymentInfo: {
+                          razorpayPaymentId: response?.razorpay_payment_id,
+                          razorpayOrderId: response?.razorpay_order_id,
+                        },
+                        shippingInfo: {
+                          firstName: shippingInfo?.firstName,
+                          lastName: shippingInfo?.lastName,
+                          address: shippingInfo?.address,
+                          state: shippingInfo?.state,
+                          city: shippingInfo?.city,
+                          country: shippingInfo?.country,
+                          postCode: shippingInfo?.postCode,
+                          other: shippingInfo?.other,
+                        },
+                      })
+                    );
+                  }
+                } catch (error) {
+                  console.error(error);
+                  toast.error("An error occurred during payment verification");
+                }
+              },
+              prefill: {
+                name: shippingInfo?.firstName + " " + shippingInfo?.lastName,
+                email: userState?.email,
+                contact: "",
+              },
+              notes: {
+                address: shippingInfo?.address,
+                state: shippingInfo?.state,
+                city: shippingInfo?.city,
+                country: shippingInfo?.country,
+                postCode: shippingInfo?.postCode,
+              },
+              theme: {
+                color: "#61dafb",
+              },
+            };
+
+            const paymentObject = new window.Razorpay(options);
+            paymentObject.open();
+          } else {
+            toast.error("Something Went Wrong");
+          }
+        } catch (error) {
+          console.error(error);
+          toast.error("An error occurred during checkout");
+        }
+        if (!stripe) {
+          toast.error("Stripe is not properly initialized. Please try again.");
           return;
         }
-
-        const result = await axios.post(
-          `${base_url}user/order/checkout`,
-          { amount: totalAmount + 15 },
-          config
-        );
-
-        if (result && result.data && result.data.order) {
-          const { amount, id: order_id, currency } = result.data.order;
-          const options = {
-            key: process.env.REACT_APP_KEY_ID,
-            amount: amount,
-            currency: currency,
-            name: shippingInfo?.firstName + " " + shippingInfo?.lastName,
-            description: "Test Transaction",
-            order_id: order_id,
-            handler: async function (response) {
-              try {
-                const data = {
-                  orderCreationId: order_id,
-                  razorpayPaymentId: response?.razorpay_payment_id,
-                  razorpayOrderId: response?.razorpay_order_id,
-                };
-                console.log("Payment data:", data);
-
-                const result = await axios.post(
-                  `${base_url}user/order/paymentverification`,
-                  data,
-                  config
-                );
-                console.log("Payment verification result:", result);
-
-                if (result && result?.data) {
-                  dispatch(
-                    createAnOrder({
-                      totalPrice: totalAmount,
-                      totalPriceAfterDiscount: totalAmount,
-                      orderItems: cartProductState,
-                      paymentInfo: {
-                        razorpayPaymentId: response?.razorpay_payment_id,
-                        razorpayOrderId: response?.razorpay_order_id,
-                      },
-                      shippingInfo: {
-                        firstName: shippingInfo?.firstName,
-                        lastName: shippingInfo?.lastName,
-                        address: shippingInfo?.address,
-                        state: shippingInfo?.state,
-                        city: shippingInfo?.city,
-                        country: shippingInfo?.country,
-                        postCode: shippingInfo?.postCode,
-                        other: shippingInfo?.other,
-                      },
-                    })
-                  );
-                }
-              } catch (error) {
-                console.error(error);
-                toast.error("An error occurred during payment verification");
-              }
-            },
-            prefill: {
-              name: shippingInfo?.firstName + " " + shippingInfo?.lastName,
-              email: userState?.email,
-              contact: "",
-            },
-            notes: {
-              address: shippingInfo?.address,
-              state: shippingInfo?.state,
-              city: shippingInfo?.city,
-              country: shippingInfo?.country,
-              postCode: shippingInfo?.postCode,
-            },
-            theme: {
-              color: "#61dafb",
-            },
-          };
-
-          const paymentObject = new window.Razorpay(options);
-          paymentObject.open();
-        } else {
-          toast.error("Something Went Wrong");
+      } else if (paymentGateway === "stripe") {
+        try {
+          await handleStripePayment();
+        } catch (error) {
+          console.error("Error:", error);
+          toast.error("Payment failed. Please try again.");
+          setLoading(false);
         }
-      } catch (error) {
-        console.error(error);
-        toast.error("An error occurred during checkout");
+      } else {
+        toast.warn("Please select a payment gateway before placing the order");
       }
-      if (!stripe || !elements) {
-        toast.error("Stripe is not properly initialized. Please try again.");
-        return;
-      }
-    } else if (paymentGateway === "stripe") {
-      await handleStripePayment();
     } else {
-      toast.warn("Please select a payment gateway before placing the order");
+      toast.error(
+        "Please fill in all the required details and select a payment gateway before placing your order."
+      );
     }
   };
 
@@ -527,8 +542,9 @@ const CheckOut = () => {
                 </div>
                 <div>
                   <h2>Select Payment Gateway</h2>
-                  <div>
+                  <div className="form-check">
                     <input
+                      className="form-check-input"
                       type="radio"
                       id="stripe"
                       name="paymentGateway"
@@ -537,8 +553,9 @@ const CheckOut = () => {
                     />
                     <label htmlFor="stripe">Stripe</label>
                   </div>
-                  <div>
+                  <div className="form-check">
                     <input
+                      className="form-check-input"
                       type="radio"
                       id="razorpay"
                       name="paymentGateway"
@@ -548,13 +565,6 @@ const CheckOut = () => {
                     <label htmlFor="razorpay">Razorpay</label>
                   </div>
                 </div>
-                {/* Add the CardElement component here */}
-                {paymentGateway === "stripe" && (
-                  <div className="w-100">
-                    <h3>Enter Card Details</h3>
-                    <CardElement options={{ hidePostalCode: true }} />
-                  </div>
-                )}
                 <div className="w-100">
                   <div className="d-flex justify-content-between align-items-center">
                     <Link className="text-dark" to="/cart">
@@ -568,6 +578,7 @@ const CheckOut = () => {
                       className="button"
                       type="submit"
                       onClick={checkOutHandler}
+                      disabled={!formik.isValid || !paymentGateway}
                     >
                       Place Order
                     </button>

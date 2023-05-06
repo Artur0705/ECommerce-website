@@ -538,7 +538,12 @@ const createOrder = asyncHandler(async (req, res) => {
       orderItems,
       totalPrice,
       totalPriceAfterDiscount,
-      paymentInfo,
+      paymentInfo: {
+        ...paymentInfo,
+        ...(paymentInfo.stripeSessionId && {
+          stripeSessionId: paymentInfo.stripeSessionId,
+        }),
+      },
       user: _id,
     });
     res.json({

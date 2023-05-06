@@ -25,6 +25,8 @@ import { PrivateRoutes } from "./routing/privateRoute";
 import { OpenRoutes } from "./routing/openRoutes";
 import Orders from "./pages/Orders";
 import Profile from "./pages/Profile";
+import Success from "./pages/Success";
+import Cancel from "./pages/Cancel";
 
 function App() {
   return (
@@ -77,6 +79,22 @@ function App() {
               element={
                 <PrivateRoutes>
                   <Wishlist />
+                </PrivateRoutes>
+              }
+            />
+            <Route
+              path="success"
+              element={
+                <PrivateRoutes>
+                  <Success />
+                </PrivateRoutes>
+              }
+            />
+            <Route
+              path="cancel"
+              element={
+                <PrivateRoutes>
+                  <Cancel />
                 </PrivateRoutes>
               }
             />

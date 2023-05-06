@@ -67,17 +67,6 @@ const createOrder = async (orderDetail) => {
   }
 };
 
-const checkoutWithStripe = async (stripeData) => {
-  const response = await axios.post(
-    `${base_url}order/create-stripe-payment`,
-    stripeData,
-    config
-  );
-  if (response.data) {
-    return response.data;
-  }
-};
-
 const getUserOrders = async () => {
   const response = await axios.get(`${base_url}user/getmyorders`, config);
   if (response.data) {
@@ -132,7 +121,6 @@ export const authService = {
   removeProductFromCart,
   updateProductFromCart,
   createOrder,
-  checkoutWithStripe,
   getUserOrders,
   updateUser,
   updatePassword,

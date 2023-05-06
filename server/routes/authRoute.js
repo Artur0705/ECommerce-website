@@ -29,6 +29,7 @@ const {
   paymentVerification,
   createStripePaymentIntent,
   confirmStripePayment,
+  createStripeCheckoutSession,
 } = require("../controller/paymentController");
 
 const router = express.Router();
@@ -49,6 +50,12 @@ router.post("/cart", authMiddleware, userCart);
 router.post("/order/checkout", authMiddleware, checkout);
 router.post("/order/paymentverification", authMiddleware, paymentVerification);
 // router.post("/cart/apply-coupon", authMiddleware, applyCoupon);
+router.post(
+  "/order/create-stripe-checkout-session",
+  authMiddleware,
+  createStripeCheckoutSession
+);
+
 router.post("/cart/create-order", authMiddleware, createOrder);
 router.post(
   "/order/create-stripe-payment",

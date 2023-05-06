@@ -194,7 +194,7 @@ const MainLayout = () => {
                 <img
                   width={32}
                   height={32}
-                  src="https://media.licdn.com/dms/image/D5603AQF1oO-LOJxT_w/profile-displayphoto-shrink_200_200/0/1664684206755?e=1683158400&v=beta&t=GEJ0Vifg5CXC-FMk8cvHBCVozNkbHk4jHYdzJuVot9I"
+                  src="https://media.licdn.com/dms/image/D5603AQF1oO-LOJxT_w/profile-displayphoto-shrink_800_800/0/1664684206755?e=1688601600&v=beta&t=2rtqrrVZMf-oqOjGIgZiGbx0qpGDjGZMn576ZBfQWb0"
                   alt="adminPic"
                 />
               </div>

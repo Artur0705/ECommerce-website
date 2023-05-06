@@ -47,7 +47,7 @@ const createStripeCheckoutSession = async (req, res) => {
           description: "Product",
           images: [item.productImage],
         },
-        unit_amount: item.price * 100, // Convert to cents
+        unit_amount: item.price * 100,
       },
       quantity: item.quantity,
     }));
@@ -56,7 +56,7 @@ const createStripeCheckoutSession = async (req, res) => {
       payment_method_types: ["card"],
       line_items: line_items,
       mode: "payment",
-      success_url: `http://localhost:3000/success?sessionId={CHECKOUT_SESSION_ID}`, // Update this line
+      success_url: `http://localhost:3000/success?sessionId={CHECKOUT_SESSION_ID}`,
       cancel_url: "http://localhost:3000/cancel",
     });
 

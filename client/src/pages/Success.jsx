@@ -6,9 +6,7 @@ import { createAnOrder } from "../features/user/userSlice";
 const Success = () => {
   const dispatch = useDispatch();
   const location = useLocation();
-  const { cartState, shippingInfo, cartProducts } = useSelector(
-    (state) => state?.auth?.cartProducts || {}
-  );
+  const { cartState } = useSelector((state) => state?.auth?.cartProducts || {});
 
   // Function to parse query parameters
   const getQueryParams = (params) => {

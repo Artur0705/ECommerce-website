@@ -82,7 +82,7 @@ const orderSchema = new mongoose.Schema(
     },
     month: {
       type: String,
-      default: new Date().toLocaleString("default", { month: "long" }),
+      default: new Date().getMonth(),
     },
     totalPrice: {
       type: Number,

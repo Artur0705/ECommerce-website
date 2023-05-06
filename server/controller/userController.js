@@ -606,53 +606,12 @@ const getMonthWiseOrderIncome = asyncHandler(async (req, res) => {
           month: "$month",
         },
         amount: { $sum: "$totalPriceAfterDiscount" },
-      },
-    },
-  ]);
-  res.json(data);
-});
-
-const getMonthWiseOrdercount = asyncHandler(async (req, res) => {
-  let monthNames = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
-  let d = new Date();
-  let endDate = "";
-  d.setDate(1);
-  for (let index = 0; index < 11; index++) {
-    d.setMonth(d.getMonth() - 1);
-    endDate = monthNames[d.getMonth()] + " " + d.getFullYear();
-  }
-  const data = await Order.aggregate([
-    {
-      $match: {
-        createdAt: {
-          $lte: new Date(),
-          $gte: new Date(endDate),
-        },
-      },
-    },
-    {
-      $group: {
-        _id: {
-          month: "$month",
-        },
         count: { $sum: 1 },
       },
     },
   ]);
   res.json(data);
+  console.log(data);
 });
 
 const getYearlyTotalOrders = asyncHandler(async (req, res) => {
@@ -721,6 +680,5 @@ module.exports = {
   updateProductQuantityFromCart,
   getMyOrders,
   getMonthWiseOrderIncome,
-  getMonthWiseOrdercount,
   getYearlyTotalOrders,
 };

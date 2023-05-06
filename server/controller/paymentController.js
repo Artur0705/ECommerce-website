@@ -29,23 +29,6 @@ const paymentVerification = async (req, res) => {
   });
 };
 
-const createStripePaymentIntent = async (req, res) => {
-  const { amount } = req.body;
-  try {
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount: amount * 100,
-      currency: "AUD",
-    });
-
-    res.json({
-      success: true,
-      client_secret: paymentIntent.client_secret,
-    });
-  } catch (error) {
-    res.status(400).json({ success: false, message: error.message });
-  }
-};
-
 const createStripeCheckoutSession = async (req, res) => {
   const { cartItems } = req.body;
   try {
@@ -86,24 +69,8 @@ const createStripeCheckoutSession = async (req, res) => {
   }
 };
 
-const confirmStripePayment = async (req, res) => {
-  const { paymentIntentId } = req.body;
-  try {
-    const paymentIntent = await stripe.paymentIntents.confirm(paymentIntentId);
-
-    res.json({
-      success: true,
-      paymentIntent,
-    });
-  } catch (error) {
-    res.status(400).json({ success: false, message: error.message });
-  }
-};
-
 module.exports = {
   checkout,
   paymentVerification,
-  createStripePaymentIntent,
   createStripeCheckoutSession,
-  confirmStripePayment,
 };

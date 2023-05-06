@@ -540,8 +540,8 @@ const createOrder = asyncHandler(async (req, res) => {
       totalPriceAfterDiscount,
       paymentInfo: {
         ...paymentInfo,
-        ...(paymentInfo.stripeSessionId && {
-          stripeSessionId: paymentInfo.stripeSessionId,
+        ...(paymentInfo.stripePaymentIntentId && {
+          stripePaymentIntentId: paymentInfo.stripePaymentIntentId,
         }),
       },
       user: _id,

@@ -29,8 +29,6 @@ const { authMiddleware, isAdmin } = require("../middleware/authMiddleware");
 const {
   checkout,
   paymentVerification,
-  createStripePaymentIntent,
-  confirmStripePayment,
   createStripeCheckoutSession,
 } = require("../controller/paymentController");
 
@@ -57,19 +55,7 @@ router.post(
   authMiddleware,
   createStripeCheckoutSession
 );
-
 router.post("/cart/create-order", authMiddleware, createOrder);
-router.post(
-  "/order/create-stripe-payment",
-  authMiddleware,
-  createStripePaymentIntent
-);
-router.post(
-  "/order/confirm-stripe-payment",
-  authMiddleware,
-  confirmStripePayment
-);
-
 router.get("/all-users", getAllUser);
 router.get("/getmyorders", authMiddleware, getMyOrders);
 // router.get("/get-all-orders", authMiddleware, isAdmin, getAllOrders);

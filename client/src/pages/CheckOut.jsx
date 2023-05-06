@@ -134,6 +134,7 @@ const CheckOut = () => {
       };
 
       setShippingInfo(updatedShippingInfo);
+      localStorage.setItem("shippingInfo", JSON.stringify(updatedShippingInfo));
     },
   });
 
@@ -209,6 +210,8 @@ const CheckOut = () => {
         price: item?.productId?.price,
         productImage: item?.productId?.images[0]?.url,
         quantity: item?.quantity,
+        color: item?.color, // Add this line
+        product: item?.productId._id, // Add this line
       }));
       console.log("cartItems before sending:", cartItems); // Add this line
 
@@ -218,6 +221,9 @@ const CheckOut = () => {
         config
       );
       const sessionId = response.data.session_id;
+
+      localStorage.setItem("cartItems", JSON.stringify(cartItems)); // Add this line
+      localStorage.setItem("totalAmount", totalAmount); // Add this line
 
       const { error } = await stripe.redirectToCheckout({
         sessionId: sessionId,
@@ -269,14 +275,12 @@ const CheckOut = () => {
                     razorpayPaymentId: response?.razorpay_payment_id,
                     razorpayOrderId: response?.razorpay_order_id,
                   };
-                  console.log("Payment data:", data);
 
                   const result = await axios.post(
                     `${base_url}user/order/paymentverification`,
                     data,
                     config
                   );
-                  console.log("Payment verification result:", result);
 
                   if (result && result?.data) {
                     dispatch(

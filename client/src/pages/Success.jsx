@@ -6,7 +6,7 @@ import { createAnOrder } from "../features/user/userSlice";
 const Success = () => {
   const dispatch = useDispatch();
   const location = useLocation();
-  const { cartState, shippingInfo, totalAmount, cartProducts } = useSelector(
+  const { cartState, shippingInfo, cartProducts } = useSelector(
     (state) => state?.auth?.cartProducts || {}
   );
 
@@ -19,40 +19,53 @@ const Success = () => {
 
   // Get sessionId from the query parameters
   const stripeSessionId = getQueryParams(location.search);
+  const storedShippingInfo = localStorage.getItem("shippingInfo");
+  const parsedShippingInfo = storedShippingInfo
+    ? JSON.parse(storedShippingInfo)
+    : null;
+  const cartItems = JSON.parse(localStorage.getItem("cartItems"));
+  const totalAmount = localStorage.getItem("totalAmount");
 
   useEffect(() => {
-    if (stripeSessionId && cartProducts && shippingInfo && totalAmount) {
-      console.log("Shipping Info:", shippingInfo);
-      console.log("Total Price:", totalAmount);
-      console.log("Total Price After Discount:", totalAmount);
+    console.log("stripeSessionId:", stripeSessionId);
+    console.log("cartProducts:", cartItems);
+    console.log("parsedShippingInfo:", parsedShippingInfo);
+    console.log("totalAmount:", totalAmount);
+
+    if (stripeSessionId && cartItems && parsedShippingInfo && totalAmount) {
+      console.log("Creating an order...");
 
       dispatch(
         createAnOrder({
           totalPrice: totalAmount,
           totalPriceAfterDiscount: totalAmount,
-          orderItems: cartProducts,
+          orderItems: cartItems,
           paymentInfo: {
-            stripeSessionId: stripeSessionId,
+            stripePaymentIntentId: stripeSessionId,
           },
           shippingInfo: {
-            firstName: shippingInfo?.firstName || "",
-            lastName: shippingInfo?.lastName || "",
-            address: shippingInfo?.address || "",
-            state: shippingInfo?.state || "",
-            city: shippingInfo?.city || "",
-            country: shippingInfo?.country || "",
-            postCode: shippingInfo?.postCode || "",
-            other: shippingInfo?.other || "",
+            firstName: parsedShippingInfo?.firstName || "",
+            lastName: parsedShippingInfo?.lastName || "",
+            address: parsedShippingInfo?.address || "",
+            state: parsedShippingInfo?.state || "",
+            city: parsedShippingInfo?.city || "",
+            country: parsedShippingInfo?.country || "",
+            postCode: parsedShippingInfo?.postCode || "",
+            other: parsedShippingInfo?.other || "",
           },
         })
       );
+
+      localStorage.removeItem("shippingInfo");
+    } else {
+      console.log("Not creating an order. One or more conditions are not met.");
     }
   }, [
     dispatch,
     stripeSessionId,
     cartState,
-    cartProducts,
-    shippingInfo,
+    cartItems,
+    parsedShippingInfo,
     totalAmount,
   ]);
 

@@ -569,6 +569,31 @@ const getMyOrders = asyncHandler(async (req, res) => {
   }
 });
 
+const getAllOrders = asyncHandler(async (req, res) => {
+  try {
+    const orders = await Order.find()
+      .populate("user")
+      .populate("orderItems.product")
+      .populate("orderItems.color");
+    res.json({ orders });
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
+const getSingleOrder = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  try {
+    const orders = await Order.findOne({ _id: id })
+      .populate("orderItems.product")
+      .populate("orderItems.color")
+      .populate("user");
+    res.json({ orders });
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
 const getMonthWiseOrderIncome = asyncHandler(async (req, res) => {
   let monthNames = [
     "January",
@@ -681,4 +706,6 @@ module.exports = {
   getMyOrders,
   getMonthWiseOrderIncome,
   getYearlyTotalOrders,
+  getAllOrders,
+  getSingleOrder,
 };

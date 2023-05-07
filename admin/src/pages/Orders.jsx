@@ -43,27 +43,24 @@ const Orders = () => {
     dispatch(getOrders());
     // eslint-disable-next-line
   }, []);
-  const orderState = useSelector((state) => state.auth.orders);
+  const orderState = useSelector((state) => state.auth.orders.orders);
 
   const data = [];
-  for (let i = 0; i < orderState.length; i++) {
+  for (let i = 0; i < orderState?.length; i++) {
     data.push({
       key: i + 1,
-      name:
-        orderState[i].orderedBy.firstName +
-        " " +
-        orderState[i].orderedBy.lastName,
+      name: orderState[i].user?.firstName + " " + orderState[i].user?.lastName,
       product: (
         <Link
-          to={`/admin/orders/${orderState[i].orderedBy._id}`}
+          to={`/admin/orders/${orderState[i]?._id}`}
           className="text-secondary"
         >
           View Orders
         </Link>
       ),
-      amount: orderState[i].paymentIntent.amount,
-      status: orderState[i].paymentIntent.status,
-      date: new Date(orderState[i].paymentIntent.created).toLocaleString(),
+      amount: orderState[i].totalPrice,
+      status: orderState[i].orderStatus,
+      date: new Date(orderState[i].createdAt).toLocaleString(),
       action: (
         <>
           <Link to="/" className="text-success fs-3">

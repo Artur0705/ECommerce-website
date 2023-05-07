@@ -15,9 +15,9 @@ const getOrders = async () => {
 };
 
 const getOrder = async (id) => {
-  const response = await axios.post(
-    `${base_url}user/getorderbyuser/${id}`,
-    "",
+  const response = await axios.get(
+    `${base_url}user/get-order/${id}`,
+
     config
   );
 

@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import CustomInput from "../components/CustomInput";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
@@ -77,11 +77,7 @@ const Login = () => {
           <div className="error mt-2">
             {formik.touched.password && formik.errors.password}
           </div>
-          <div className="mb-3 text-end">
-            <Link to="forgot-password" className="text-secondary">
-              Forgot Password?
-            </Link>
-          </div>
+
           <button
             className="border-0 px-3 py-2 text-white fw-bold w-100 text-center text-decoration-none fs-5"
             type="submit"

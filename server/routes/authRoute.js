@@ -26,6 +26,7 @@ const {
   getYearlyTotalOrders,
   getAllOrders,
   getSingleOrder,
+  updateOrder,
 } = require("../controller/userController");
 const { authMiddleware, isAdmin } = require("../middleware/authMiddleware");
 const {
@@ -62,6 +63,7 @@ router.get("/all-users", getAllUser);
 router.get("/getmyorders", authMiddleware, getMyOrders);
 router.get("/get-all-orders", authMiddleware, isAdmin, getAllOrders);
 router.get("/get-order/:id", authMiddleware, isAdmin, getSingleOrder);
+router.put("/update-order/:id", authMiddleware, isAdmin, updateOrder);
 // router.post("/getorderbyuser/:id", authMiddleware, isAdmin, getOrderByUserId);
 router.get("/getMonthWiseOrderIncome", authMiddleware, getMonthWiseOrderIncome);
 router.get("/getyearlyorders", authMiddleware, getYearlyTotalOrders);

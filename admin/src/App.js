@@ -22,13 +22,29 @@ import CouponList from "./pages/CouponList";
 import AddCoupon from "./pages/AddCoupon";
 import ViewEnquiry from "./pages/ViewEnquiry";
 import ViewOrder from "./pages/ViewOrder";
+import { PrivateRoutes } from "./routing/privateRoute";
+import { OpenRoutes } from "./routing/openRoutes";
 
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path="/admin" element={<MainLayout />}>
+        <Route
+          path="/"
+          element={
+            <OpenRoutes>
+              <Login />
+            </OpenRoutes>
+          }
+        />
+        <Route
+          path="/admin"
+          element={
+            <PrivateRoutes>
+              <MainLayout />
+            </PrivateRoutes>
+          }
+        >
           <Route index element={<Dashboard />} />
           <Route path="enquiries" element={<Enquiries />} />
           <Route path="enquiries/:id" element={<ViewEnquiry />} />

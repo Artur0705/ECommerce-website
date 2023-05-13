@@ -16,10 +16,12 @@ import { FaClipboardList, FaMicroblog } from "react-icons/fa";
 import { IoCreateOutline, IoNotificationsSharp } from "react-icons/io5";
 import { RiCouponLine } from "react-icons/ri";
 import { VscRequestChanges } from "react-icons/vsc";
+import { CiLogout } from "react-icons/ci";
 import { Layout, Menu, theme } from "antd";
 
 import { Link, useNavigate } from "react-router-dom";
 import { Outlet } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const { Header, Sider, Content } = Layout;
 
@@ -31,6 +33,8 @@ const MainLayout = () => {
   } = theme.useToken();
 
   const navigate = useNavigate();
+
+  const authState = useSelector((state) => state?.auth?.user);
 
   return (
     <Layout onContextMenu={(e) => e.preventDefault()}>
@@ -47,6 +51,8 @@ const MainLayout = () => {
           defaultSelectedKeys={[""]}
           onClick={({ key }) => {
             if (key === "signout") {
+              localStorage.clear();
+              window.location.reload();
             } else {
               navigate(key);
             }
@@ -163,6 +169,11 @@ const MainLayout = () => {
               icon: <VscRequestChanges className="fs-4" />,
               label: "Enquiries",
             },
+            {
+              key: "signout",
+              icon: <CiLogout className="fs-4" />,
+              label: "Sign Out",
+            },
           ]}
         />
       </Sider>
@@ -204,8 +215,10 @@ const MainLayout = () => {
                 data-bs-toggle="dropdown"
                 aria-expanded="false"
               >
-                <h5 className="mb-0">Artur</h5>
-                <p className="mb-0">artlil420@gmail.com</p>
+                <h5 className="mb-0">
+                  {authState?.firstName + " " + authState?.lastName}
+                </h5>
+                <p className="mb-0">{authState?.email}</p>
               </div>
               <div className="dropdown-menu" aria-labelledby="dropdownMenuLink">
                 <li>
@@ -215,16 +228,6 @@ const MainLayout = () => {
                     to="/"
                   >
                     View Profle
-                  </Link>
-                </li>
-
-                <li>
-                  <Link
-                    className="dropdown-item py-1 mb-1"
-                    style={{ height: "auto", lineHeight: "20px" }}
-                    to="/"
-                  >
-                    Log Out
                   </Link>
                 </li>
               </div>

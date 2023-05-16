@@ -648,7 +648,6 @@ const getMonthWiseOrderIncome = asyncHandler(async (req, res) => {
     },
   ]);
   res.json(data);
-  console.log(data);
 });
 
 const getYearlyTotalOrders = asyncHandler(async (req, res) => {

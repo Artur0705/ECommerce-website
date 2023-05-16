@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { Table } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { getOrders, updateAnOrder } from "../features/auth/authSlice";
+import { getAllOrders, updateAnOrder } from "../features/auth/authSlice";
 
 const columns = [
   {
@@ -38,7 +38,7 @@ const columns = [
 const Orders = () => {
   const dispatch = useDispatch();
   useEffect(() => {
-    dispatch(getOrders());
+    dispatch(getAllOrders());
     // eslint-disable-next-line
   }, []);
   const orderState = useSelector((state) => state?.auth?.orders?.orders);

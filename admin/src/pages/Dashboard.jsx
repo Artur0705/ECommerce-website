@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import {
   getMonthlyData,
-  getOrders,
+  getAllOrders,
   getYearlyData,
 } from "../features/auth/authSlice";
 import { useState } from "react";
@@ -49,7 +49,7 @@ const Dashboard = () => {
   useEffect(() => {
     dispatch(getMonthlyData());
     dispatch(getYearlyData());
-    dispatch(getOrders());
+    dispatch(getAllOrders());
   }, []);
 
   useEffect(() => {
@@ -104,7 +104,7 @@ const Dashboard = () => {
       });
     }
     setOrderData(data1);
-  }, [monthlyDataState, yearlyDataState]);
+  }, [monthlyDataState, yearlyDataState, orderState]);
 
   const config = {
     data: dataMonthly,

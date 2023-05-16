@@ -14,9 +14,9 @@ export const getProducts = createAsyncThunk(
 
 export const createProducts = createAsyncThunk(
   "product/create-products",
-  async (productData, thunkAPI) => {
+  async (product, thunkAPI) => {
     try {
-      return await productService.createProduct(productData);
+      return await productService.createProduct(product);
     } catch (error) {
       return thunkAPI.rejectWithValue(error);
     }
@@ -28,6 +28,28 @@ export const deleteProduct = createAsyncThunk(
   async (id, thunkAPI) => {
     try {
       return await productService.deleteProduct(id);
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error);
+    }
+  }
+);
+
+export const updateAProduct = createAsyncThunk(
+  "product/update-product",
+  async (productData, thunkAPI) => {
+    try {
+      return await productService.updateProduct(productData);
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error);
+    }
+  }
+);
+
+export const getAProduct = createAsyncThunk(
+  "product/get-product",
+  async (id, thunkAPI) => {
+    try {
+      return await productService.getProduct(id);
     } catch (error) {
       return thunkAPI.rejectWithValue(error);
     }
@@ -94,6 +116,45 @@ export const productSlice = createSlice({
         state.isSuccess = false;
         state.message = action.error;
       })
+      .addCase(updateAProduct.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(updateAProduct.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isError = false;
+        state.isSuccess = true;
+        state.updatedProduct = action.payload;
+      })
+      .addCase(updateAProduct.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.isSuccess = false;
+        state.message = action.error;
+      })
+      .addCase(getAProduct.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(getAProduct.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isError = false;
+        state.isSuccess = true;
+        state.productName = action.payload.title;
+        state.productDescription = action.payload.description;
+        state.productPrice = action.payload.price;
+        state.productBrand = action.payload.brand;
+        state.productCategory = action.payload.category;
+        state.productTags = action.payload.tags;
+        state.productColors = action.payload.colors;
+        state.productQuantity = action.payload.quantity;
+        state.productImages = action.payload.images;
+      })
+      .addCase(getAProduct.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.isSuccess = false;
+        state.message = action.error;
+      })
+
       .addCase(resetState, () => initialState);
   },
 });

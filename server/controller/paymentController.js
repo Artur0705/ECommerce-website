@@ -8,25 +8,41 @@ const instance = new RazorPay({
 });
 
 const checkout = async (req, res) => {
-  const { amount } = req.body;
-  const option = {
-    amount: amount * 100,
-    currency: "AUD",
-  };
+  try {
+    const { amount } = req.body;
+    const option = {
+      amount: amount * 100,
+      currency: "AUD",
+    };
 
-  const order = await instance.orders.create(option);
-  res.json({
-    success: true,
-    order,
-  });
+    const order = await instance.orders.create(option);
+    res.json({
+      success: true,
+      order,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: error.message || "An unknown error occurred",
+    });
+  }
 };
 
 const paymentVerification = async (req, res) => {
-  const { razorpayOrderId, razorpayPaymentId } = req.body;
-  res.json({
-    razorpayOrderId,
-    razorpayPaymentId,
-  });
+  try {
+    const { razorpayOrderId, razorpayPaymentId } = req.body;
+    res.json({
+      razorpayOrderId,
+      razorpayPaymentId,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: error.message || "An unknown error occurred",
+    });
+  }
 };
 
 const createStripeCheckoutSession = async (req, res) => {

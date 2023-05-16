@@ -25,14 +25,7 @@ const Success = () => {
   const totalAmount = localStorage.getItem("totalAmount");
 
   useEffect(() => {
-    console.log("stripeSessionId:", stripeSessionId);
-    console.log("cartProducts:", cartItems);
-    console.log("parsedShippingInfo:", parsedShippingInfo);
-    console.log("totalAmount:", totalAmount);
-
     if (stripeSessionId && cartItems && parsedShippingInfo && totalAmount) {
-      console.log("Creating an order...");
-
       dispatch(
         createAnOrder({
           totalPrice: totalAmount,

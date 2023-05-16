@@ -21,7 +21,6 @@ const Home = () => {
   const navigate = useNavigate();
   const blogState = useSelector((state) => state?.blog?.blog);
   const productState = useSelector((state) => state?.product?.product);
-  console.log(productState);
   const [isWishlist, setIsWishlist] = useState(() => {
     const wishlistData = JSON.parse(localStorage.getItem("wishlist")) || {};
     return (
@@ -81,8 +80,6 @@ const Home = () => {
   };
   return (
     <>
-
-    
       <Meta title={"Home"} />
       <Container class1="home-wrapper-1 py-5">
         <div className="row">

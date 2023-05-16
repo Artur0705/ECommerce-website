@@ -11,6 +11,7 @@ import {
   resetState,
   updateABlogCategory,
 } from "../features/blogCategory/blogCategorySlice";
+import { HiOutlineArrowLongLeft } from "react-icons/hi2";
 
 let schema = Yup.object().shape({
   title: Yup.string().required("Blog Category Name is Required"),
@@ -75,12 +76,29 @@ const AddBlogCategory = () => {
     },
   });
 
+  const goBack = () => {
+    navigate(-1);
+  };
+
   return (
     <div>
-      <h3 className="mb-4 title">
-        {" "}
-        {getBlogCatId !== undefined ? "Edit" : "Add"} Blog Category
-      </h3>
+      <div className="d-flex justify-content-between align-items-center">
+        <h3 className="mb-4 title">
+          {getBlogCatId !== undefined ? "Edit" : "Add"} Blog Category
+        </h3>
+        <div>
+          {getBlogCatId !== undefined && (
+            <button
+              className="bg-transparent border-0 mb-0 fs-6 d-flex gap-3 align-items-center"
+              onClick={goBack}
+            >
+              <HiOutlineArrowLongLeft className="text-dark fs-2" />
+              Go Back
+            </button>
+          )}
+        </div>
+      </div>
+
       <div>
         <form action="" onSubmit={formik.handleSubmit}>
           <CustomInput

@@ -17,9 +17,18 @@ const columns = [
     dataIndex: "key",
   },
   {
-    title: "Title",
+    title: "Color",
     dataIndex: "title",
-    sorter: (a, b) => a.title.length - b.title.length,
+    render: (color) => (
+      <div
+        style={{
+          backgroundColor: color,
+          width: "20px",
+          height: "20px",
+          borderRadius: "50%",
+        }}
+      ></div>
+    ),
   },
   {
     title: "Action",

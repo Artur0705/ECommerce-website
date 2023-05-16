@@ -48,7 +48,7 @@ export const getYearlyData = createAsyncThunk(
   }
 );
 
-export const getOrders = createAsyncThunk(
+export const getAllOrders = createAsyncThunk(
   "order/get-orders",
   async (thunkAPI) => {
     try {
@@ -101,16 +101,16 @@ export const authSlice = createSlice({
         state.isSuccess = false;
         state.user = null;
       })
-      .addCase(getOrders.pending, (state) => {
+      .addCase(getAllOrders.pending, (state) => {
         state.isLoading = true;
       })
-      .addCase(getOrders.fulfilled, (state, action) => {
+      .addCase(getAllOrders.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isError = false;
         state.isSuccess = true;
         state.orders = action.payload;
       })
-      .addCase(getOrders.rejected, (state, action) => {
+      .addCase(getAllOrders.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.isSuccess = false;

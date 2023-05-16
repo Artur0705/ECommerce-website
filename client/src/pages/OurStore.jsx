@@ -16,11 +16,10 @@ const OurStore = () => {
 
   const [tag, setTag] = useState(null);
   const [category, setCategory] = useState(null);
-  const [brand, setBrand] = useState(null)
+  const [brand, setBrand] = useState(null);
   const [minPrice, setMinPrice] = useState(null);
   const [maxPrice, setMaxPrice] = useState(null);
   const [sort, setSort] = useState(null);
-  console.log(sort);
 
   useEffect(() => {
     let newBrands = [];
@@ -40,9 +39,11 @@ const OurStore = () => {
   useEffect(() => {
     getProducts();
   }, [sort, tag, brand, category, minPrice, maxPrice]);
-  
+
   const getProducts = () => {
-    dispatch(getAllProducts({sort, tag, brand, category, minPrice, maxPrice}));
+    dispatch(
+      getAllProducts({ sort, tag, brand, category, minPrice, maxPrice })
+    );
   };
 
   return (

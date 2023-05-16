@@ -18,7 +18,6 @@ const Header = () => {
   const [total, setTotal] = useState(null);
   const [paginate, setPaginate] = useState(true);
   const [category, setCategory] = useState(null);
-  console.log(category);
   const [categories, setCategories] = useState([]);
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -123,7 +122,7 @@ const Header = () => {
             <div className="col-5">
               <div className="header-upper-links d-flex align-items-center justify-content-between">
                 <div>
-                    <Link
+                  <Link
                     to={"/compare-product"}
                     className="d-flex align-items-center gap-10 text-white"
                   >
@@ -131,7 +130,7 @@ const Header = () => {
                     <p className="mb-0">
                       Compare <br /> Products
                     </p>
-                  </Link> 
+                  </Link>
                 </div>
                 <div>
                   <Link
@@ -210,12 +209,11 @@ const Header = () => {
                         [...new Set(categories)]?.map((item, index) => {
                           return (
                             <ul key={index}>
-                              <li 
+                              <li
                                 className="dropdown-item text-white"
                                 onClick={() => handleCategorySelection(item)}
                                 style={{ cursor: "pointer" }}
                               >
-                                
                                 {item}
                               </li>
                             </ul>

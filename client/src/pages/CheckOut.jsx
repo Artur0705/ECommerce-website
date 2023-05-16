@@ -9,7 +9,7 @@ import { useFormik } from "formik";
 import * as yup from "yup";
 import ReactSelect from "react-select";
 import axios from "axios";
-import { base_url } from "../utils/axiosConfig";
+import { axiosInstance, base_url } from "../utils/axiosConfig";
 import { config } from "../utils/axiosConfig";
 import { createAnOrder } from "../features/user/userSlice";
 import { toast } from "react-toastify";
@@ -31,7 +31,6 @@ const CheckOut = () => {
   const userState = useSelector((state) => state?.auth?.user);
   const [totalAmount, setTotalAmount] = useState(null);
   const [shippingInfo, setShippingInfo] = useState(null);
-  console.log(shippingInfo);
 
   const [cartProductState, setCartProductState] = useState([]);
   const [countries, setCountries] = useState([]);
@@ -124,8 +123,6 @@ const CheckOut = () => {
 
       const selectedCity = cities?.find((city) => city?.id === values?.city);
 
-      console.log("Selected state:", selectedState); // Add this line to log the selected state
-
       const updatedShippingInfo = {
         ...values,
         country: selectedCountry ? selectedCountry?.name : "",
@@ -200,7 +197,6 @@ const CheckOut = () => {
     setCartProductState(items);
     // eslint-disable-next-line
   }, []);
-  console.log("cartState:", cartState); // Add this line
 
   const handleStripePayment = async () => {
     setLoading(true);
@@ -213,9 +209,8 @@ const CheckOut = () => {
         color: item?.color, // Add this line
         product: item?.productId._id, // Add this line
       }));
-      console.log("cartItems before sending:", cartItems); // Add this line
 
-      const response = await axios.post(
+      const response = await axiosInstance.post(
         `${base_url}user/order/create-stripe-checkout-session`,
         { cartItems, shippingInfo: shippingInfo },
         config
@@ -253,7 +248,7 @@ const CheckOut = () => {
             return;
           }
 
-          const result = await axios.post(
+          const result = await axiosInstance.post(
             `${base_url}user/order/checkout`,
             { amount: totalAmount + 15 },
             config
@@ -276,7 +271,7 @@ const CheckOut = () => {
                     razorpayOrderId: response?.razorpay_order_id,
                   };
 
-                  const result = await axios.post(
+                  const result = await axiosInstance.post(
                     `${base_url}user/order/paymentverification`,
                     data,
                     config
@@ -333,7 +328,8 @@ const CheckOut = () => {
             toast.error("Something Went Wrong");
           }
         } catch (error) {
-          console.error(error);
+          console.error("An error occurred during checkout: ", error);
+
           toast.error("An error occurred during checkout");
         }
         if (!stripe) {
@@ -496,7 +492,6 @@ const CheckOut = () => {
                       (state) => state?.id === formik.values.state
                     )}
                     onChange={(selectedState) => {
-                      console.log("Selected state:", selectedState);
                       formik.setFieldValue("state", selectedState?.id);
                       setSelectedStateIso2(selectedState.iso2);
                     }}

@@ -206,8 +206,8 @@ const CheckOut = () => {
         price: item?.productId?.price,
         productImage: item?.productId?.images[0]?.url,
         quantity: item?.quantity,
-        color: item?.color, // Add this line
-        product: item?.productId._id, // Add this line
+        color: item?.color,
+        product: item?.productId._id,
       }));
 
       const response = await axiosInstance.post(
@@ -217,8 +217,8 @@ const CheckOut = () => {
       );
       const sessionId = response.data.session_id;
 
-      localStorage.setItem("cartItems", JSON.stringify(cartItems)); // Add this line
-      localStorage.setItem("totalAmount", totalAmount); // Add this line
+      localStorage.setItem("cartItems", JSON.stringify(cartItems));
+      localStorage.setItem("totalAmount", totalAmount);
 
       const { error } = await stripe.redirectToCheckout({
         sessionId: sessionId,
@@ -260,7 +260,7 @@ const CheckOut = () => {
               key: process.env.REACT_APP_KEY_ID,
               amount: amount,
               currency: currency,
-              name: shippingInfo?.firstName + " " + shippingInfo?.lastName,
+              name: userState?.firstName + " " + userState?.lastName,
               description: "Test Transaction",
               order_id: order_id,
               handler: async function (response) {

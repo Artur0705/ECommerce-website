@@ -181,7 +181,7 @@ export const authSlice = createSlice({
         state.isSuccess = false;
         state.message = action.error;
         if (state.isError === true) {
-          toast.error(action.error);
+          toast.error(action.payload.response.data.message);
         }
       })
       .addCase(loginUser.pending, (state) => {
@@ -193,7 +193,6 @@ export const authSlice = createSlice({
         state.isSuccess = true;
         state.user = action.payload;
         if (state.isSuccess === true) {
-          localStorage.setItem("token", action.payload.token);
           toast.success("You're Logged in Successfully");
         }
       })
@@ -203,7 +202,7 @@ export const authSlice = createSlice({
         state.isSuccess = false;
         state.message = action.error;
         if (state.isError === true) {
-          toast.error("Invalid email address or password ");
+          toast.error(action.payload.response.data.message);
         }
       })
       .addCase(getUserProductWishlist.pending, (state) => {

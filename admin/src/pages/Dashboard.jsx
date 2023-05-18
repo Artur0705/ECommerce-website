@@ -96,7 +96,7 @@ const Dashboard = () => {
       data1.push({
         key: i,
         name:
-          orderState[i]?.user.firstName + " " + orderState[i]?.user.lastName,
+          orderState[i]?.user?.firstName + " " + orderState[i]?.user?.lastName,
         product: orderState[i]?.orderItems?.length,
         price: orderState[i]?.totalPrice,
         dprice: orderState[i]?.totalPriceAfterDiscount,

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import BreadCrumb from "../components/BreadCrumb";
 import Container from "../components/Container";
@@ -6,7 +6,7 @@ import CustomInput from "../components/CustomInput";
 import Meta from "../components/Meta";
 import { useFormik } from "formik";
 import * as yup from "yup";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../features/user/userSlice";
 
 const loginSchema = yup.object({
@@ -20,6 +20,7 @@ const loginSchema = yup.object({
 const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const authState = useSelector((state) => state?.auth);
   const formik = useFormik({
     initialValues: {
       email: "",
@@ -30,10 +31,14 @@ const Login = () => {
 
     onSubmit: (values) => {
       dispatch(loginUser(values));
-
-      navigate("/");
     },
   });
+
+  useEffect(() => {
+    if (authState?.user !== null && authState?.isError === false) {
+      navigate("/");
+    }
+  }, [authState]);
 
   return (
     <>

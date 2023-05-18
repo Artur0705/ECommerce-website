@@ -6,7 +6,6 @@ import ReactStars from "react-rating-stars-component";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import ReactImageZoom from "react-image-zoom";
 import Color from "../components/Color";
-import { IoIosGitCompare } from "react-icons/io";
 import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 import Container from "../components/Container";
 import { useDispatch, useSelector } from "react-redux";
@@ -207,11 +206,10 @@ const SingleProduct = () => {
                     edit={false}
                     activeColor="#ffd700"
                   />
-                  <p className="mb-0 t-review">(2 reviews)</p>
+                  <p className="mb-0 t-review">
+                    ( {singleProductState?.totalRating} Reviews )
+                  </p>
                 </div>
-                <a className="review-btn" href="#review">
-                  Write a Review
-                </a>
               </div>
               <div className="py-3">
                 <div className="d-flex gap-10 align-items-center my-2">
@@ -281,9 +279,6 @@ const SingleProduct = () => {
                   </div>
                 </div>
                 <div className="d-flex align-items-center gap-15">
-                  <Link to="/compare-product">
-                    <IoIosGitCompare className="fs-5 me-2" /> Add to Compare
-                  </Link>
                   <button
                     className="border-0 bg-transparent wish-btn"
                     onClick={() => {
@@ -362,13 +357,8 @@ const SingleProduct = () => {
                   </div>
                 </div>
                 {orderedProduct && (
-                  <div>
-                    <Link
-                      to="/"
-                      className="text-dark text-decoration-underline"
-                    >
-                      Write a review
-                    </Link>
+                  <div className="text-dark text-decoration-underline">
+                    Write a review
                   </div>
                 )}
               </div>

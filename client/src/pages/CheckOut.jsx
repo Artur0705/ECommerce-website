@@ -11,7 +11,7 @@ import ReactSelect from "react-select";
 import axios from "axios";
 import { axiosInstance, base_url } from "../utils/axiosConfig";
 import { config } from "../utils/axiosConfig";
-import { createAnOrder } from "../features/user/userSlice";
+import { createAnOrder, getUserCart } from "../features/user/userSlice";
 import { toast } from "react-toastify";
 import { useStripe } from "@stripe/react-stripe-js";
 
@@ -99,6 +99,10 @@ const CheckOut = () => {
     setPaymentGateway(event.target.value);
   };
 
+  useEffect(() => {
+    getUserCart();
+  }, [cartState]);
+
   const formik = useFormik({
     initialValues: {
       firstName: "",
@@ -131,7 +135,9 @@ const CheckOut = () => {
       };
 
       setShippingInfo(updatedShippingInfo);
+      console.log(updatedShippingInfo);
       localStorage.setItem("shippingInfo", JSON.stringify(updatedShippingInfo));
+      checkOutHandler(updatedShippingInfo);
     },
   });
 
@@ -236,7 +242,7 @@ const CheckOut = () => {
     }
   };
 
-  const checkOutHandler = async () => {
+  const checkOutHandler = async (updatedShippingInfo) => {
     if (formik.isValid && paymentGateway) {
       if (paymentGateway === "razorpay") {
         try {
@@ -288,14 +294,14 @@ const CheckOut = () => {
                           razorpayOrderId: response?.razorpay_order_id,
                         },
                         shippingInfo: {
-                          firstName: shippingInfo?.firstName,
-                          lastName: shippingInfo?.lastName,
-                          address: shippingInfo?.address,
-                          state: shippingInfo?.state,
-                          city: shippingInfo?.city,
-                          country: shippingInfo?.country,
-                          postCode: shippingInfo?.postCode,
-                          other: shippingInfo?.other,
+                          firstName: updatedShippingInfo?.firstName,
+                          lastName: updatedShippingInfo?.lastName,
+                          address: updatedShippingInfo?.address,
+                          state: updatedShippingInfo?.state,
+                          city: updatedShippingInfo?.city,
+                          country: updatedShippingInfo?.country,
+                          postCode: updatedShippingInfo?.postCode,
+                          other: updatedShippingInfo?.other,
                         },
                       })
                     );
@@ -306,16 +312,19 @@ const CheckOut = () => {
                 }
               },
               prefill: {
-                name: shippingInfo?.firstName + " " + shippingInfo?.lastName,
+                name:
+                  updatedShippingInfo?.firstName +
+                  " " +
+                  updatedShippingInfo?.lastName,
                 email: userState?.email,
                 contact: "",
               },
               notes: {
-                address: shippingInfo?.address,
-                state: shippingInfo?.state,
-                city: shippingInfo?.city,
-                country: shippingInfo?.country,
-                postCode: shippingInfo?.postCode,
+                address: updatedShippingInfo?.address,
+                state: updatedShippingInfo?.state,
+                city: updatedShippingInfo?.city,
+                country: updatedShippingInfo?.country,
+                postCode: updatedShippingInfo?.postCode,
               },
               theme: {
                 color: "#61dafb",

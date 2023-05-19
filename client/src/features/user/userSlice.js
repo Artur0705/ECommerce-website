@@ -84,7 +84,7 @@ export const updateCartProduct = createAsyncThunk(
 );
 
 export const updateProfile = createAsyncThunk(
-  "user/cart/profile/update",
+  "user/profile/update",
   async (data, thunkAPI) => {
     try {
       return await authService.updateUser(data);
@@ -340,6 +340,17 @@ export const authSlice = createSlice({
         state.isSuccess = true;
         state.updatedUser = action.payload;
         if (state.isSuccess) {
+          let currentUserData = JSON.parse(localStorage.getItem("customer"));
+          let newUserData = {
+            _id: currentUserData?._id,
+            token: currentUserData?.token,
+            firstName: action.payload?.firstName,
+            lastName: action.payload?.lastName,
+            email: action.payload?.email,
+            mobile: action.payload?.mobile,
+          };
+          localStorage.setItem("customer", JSON.stringify(newUserData));
+          state.user = newUserData;
           toast.success("Profile Updated Successfuly");
         }
       })

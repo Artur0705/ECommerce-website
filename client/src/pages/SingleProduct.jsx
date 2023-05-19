@@ -3,7 +3,7 @@ import BreadCrumb from "../components/BreadCrumb";
 import Meta from "../components/Meta";
 import ProductCard from "../components/ProductCard";
 import ReactStars from "react-rating-stars-component";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import ReactImageZoom from "react-image-zoom";
 import Color from "../components/Color";
 import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";

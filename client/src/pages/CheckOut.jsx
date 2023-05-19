@@ -82,6 +82,12 @@ const CheckOut = () => {
       console.log("Error fetching cities:", error);
     }
   };
+  useEffect(
+    () => {
+      dispatch(getUserCart());
+    }, // eslint-disable-next-line
+    []
+  );
 
   useEffect(
     () => {
@@ -98,10 +104,6 @@ const CheckOut = () => {
   const handleChange = (event) => {
     setPaymentGateway(event.target.value);
   };
-
-  useEffect(() => {
-    getUserCart();
-  }, [cartState]);
 
   const formik = useFormik({
     initialValues: {

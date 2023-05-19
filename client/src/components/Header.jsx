@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Typeahead } from "react-bootstrap-typeahead";
 import "react-bootstrap-typeahead/css/Typeahead.css";
 import { getAProduct, getAllProducts } from "../features/products/productSlice";
+import { getUserCart } from "../features/user/userSlice";
 
 const Header = () => {
   const cartState = useSelector((state) => state?.auth?.cartProducts);
@@ -20,6 +21,10 @@ const Header = () => {
   const [categories, setCategories] = useState([]);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(getUserCart());
+  }, []);
 
   useEffect(() => {
     let category = [];

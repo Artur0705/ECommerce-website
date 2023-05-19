@@ -54,8 +54,8 @@ const Header = () => {
       sum =
         sum +
         Number(cartState[index]?.quantity) * Number(cartState[index]?.price);
-      setTotal(sum);
     }
+    setTotal(sum);
   }, [cartState]);
 
   useEffect(() => {

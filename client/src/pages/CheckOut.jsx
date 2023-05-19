@@ -137,7 +137,6 @@ const CheckOut = () => {
       };
 
       setShippingInfo(updatedShippingInfo);
-      console.log(updatedShippingInfo);
       localStorage.setItem("shippingInfo", JSON.stringify(updatedShippingInfo));
       checkOutHandler(updatedShippingInfo);
     },

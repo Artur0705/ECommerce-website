@@ -49,14 +49,20 @@ const Cart = () => {
 
   useEffect(
     () => {
-      let sum = 0;
-      for (let index = 0; index < userCartState?.length; index++) {
-        sum =
-          sum +
-          Number(userCartState[index]?.quantity) * userCartState[index]?.price;
+      if (userCartState.length === 0) {
+        setTotalAmount(0);
+      } else {
+        let sum = 0;
+        for (let index = 0; index < userCartState?.length; index++) {
+          sum =
+            sum +
+            Number(userCartState[index]?.quantity) *
+              userCartState[index]?.price;
+        }
         setTotalAmount(sum);
       }
-    }, // eslint-disable-next-line
+    },
+    // eslint-disable-next-line
     [userCartState]
   );
 

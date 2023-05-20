@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import BreadCrumb from "../components/BreadCrumb";
 import Meta from "../components/Meta";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { IoIosArrowBack } from "react-icons/io";
 import Container from "../components/Container";
 import { useDispatch, useSelector } from "react-redux";
@@ -11,7 +11,12 @@ import ReactSelect from "react-select";
 import axios from "axios";
 import { axiosInstance, base_url } from "../utils/axiosConfig";
 import { config } from "../utils/axiosConfig";
-import { createAnOrder, getUserCart } from "../features/user/userSlice";
+import {
+  createAnOrder,
+  deleteUserCart,
+  getUserCart,
+  resetState,
+} from "../features/user/userSlice";
 import { toast } from "react-toastify";
 import { useStripe } from "@stripe/react-stripe-js";
 
@@ -27,8 +32,10 @@ const shippingSchema = yup.object({
 
 const CheckOut = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const cartState = useSelector((state) => state?.auth?.cartProducts);
   const userState = useSelector((state) => state?.auth?.user);
+  const authState = useSelector((state) => state?.auth);
   const [totalAmount, setTotalAmount] = useState(null);
   const [shippingInfo, setShippingInfo] = useState(null);
 
@@ -101,6 +108,10 @@ const CheckOut = () => {
     [cartState]
   );
 
+  useEffect(() => {
+    dispatch(getUserCart());
+  }, []);
+
   const handleChange = (event) => {
     setPaymentGateway(event.target.value);
   };
@@ -135,12 +146,18 @@ const CheckOut = () => {
         state: selectedState ? selectedState?.name : "",
         city: selectedCity ? selectedCity?.name : "",
       };
+      console.log(updatedShippingInfo);
 
       setShippingInfo(updatedShippingInfo);
       localStorage.setItem("shippingInfo", JSON.stringify(updatedShippingInfo));
-      checkOutHandler(updatedShippingInfo);
     },
   });
+
+  const handleProceedToPayment = () => {
+    formik.submitForm().then(() => {
+      checkOutHandler(formik.values);
+    });
+  };
 
   useEffect(() => {
     const getCountries = async () => {
@@ -285,6 +302,7 @@ const CheckOut = () => {
                   );
 
                   if (result && result?.data) {
+                    console.log(updatedShippingInfo);
                     dispatch(
                       createAnOrder({
                         totalPrice: totalAmount,
@@ -306,6 +324,11 @@ const CheckOut = () => {
                         },
                       })
                     );
+                    dispatch(deleteUserCart());
+                    setTimeout(() => {
+                      dispatch(resetState());
+                      navigate("/my-orders");
+                    }, 2500);
                   }
                 } catch (error) {
                   console.error(error);
@@ -313,10 +336,7 @@ const CheckOut = () => {
                 }
               },
               prefill: {
-                name:
-                  updatedShippingInfo?.firstName +
-                  " " +
-                  updatedShippingInfo?.lastName,
+                name: formik.values.firstName + " " + formik.values.lastName,
                 email: userState?.email,
                 contact: "",
               },
@@ -586,7 +606,7 @@ const CheckOut = () => {
                     <button
                       className="button"
                       type="submit"
-                      onClick={checkOutHandler}
+                      onClick={handleProceedToPayment}
                       disabled={!formik.isValid || !paymentGateway}
                     >
                       Place Order

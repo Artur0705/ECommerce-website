@@ -1,10 +1,16 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useLocation } from "react-router-dom";
-import { createAnOrder } from "../features/user/userSlice";
+import { useLocation, useNavigate } from "react-router-dom";
+import {
+  createAnOrder,
+  deleteUserCart,
+  getUserCart,
+  resetState,
+} from "../features/user/userSlice";
 
 const Success = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const location = useLocation();
   const { cartState } = useSelector((state) => state?.auth?.cartProducts || {});
 
@@ -47,6 +53,11 @@ const Success = () => {
         })
       );
 
+      dispatch(deleteUserCart());
+      setTimeout(() => {
+        dispatch(resetState());
+        navigate("/my-orders");
+      }, 2500);
       localStorage.removeItem("shippingInfo");
     } else {
       console.log("Not creating an order. One or more conditions are not met.");
@@ -58,7 +69,12 @@ const Success = () => {
     cartItems,
     parsedShippingInfo,
     totalAmount,
+    navigate,
   ]);
+
+  useEffect(() => {
+    dispatch(getUserCart());
+  }, []);
 
   return (
     <div className="container my-5">

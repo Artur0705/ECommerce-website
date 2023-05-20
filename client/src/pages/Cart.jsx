@@ -49,7 +49,7 @@ const Cart = () => {
 
   useEffect(
     () => {
-      if (userCartState.length === 0) {
+      if (userCartState?.length === 0) {
         setTotalAmount(0);
       } else {
         let sum = 0;

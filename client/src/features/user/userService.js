@@ -132,6 +132,16 @@ const resetPass = async (data) => {
   }
 };
 
+const emptyCart = async () => {
+  const response = await axiosInstance.delete(
+    `${base_url}user/empty-cart/`,
+    config()
+  );
+  if (response.data) {
+    return response.data;
+  }
+};
+
 export const authService = {
   register,
   login,
@@ -146,4 +156,5 @@ export const authService = {
   updatePassword,
   forgotPassToken,
   resetPass,
+  emptyCart,
 };

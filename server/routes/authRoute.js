@@ -27,6 +27,7 @@ const {
   getAllOrders,
   getSingleOrder,
   updateOrder,
+  emptyCart,
 } = require("../controller/userController");
 const { authMiddleware, isAdmin } = require("../middleware/authMiddleware");
 const {
@@ -40,12 +41,6 @@ const router = express.Router();
 router.post("/register", createUser);
 router.post("/forgot-password-token", forgotPasswordToken);
 router.put("/reset-password/:token", resetPassword);
-// router.put(
-//   "/orders/update-order/:id",
-//   authMiddleware,
-//   isAdmin,
-//   updateOrderStatus
-// );
 router.put("/update-password", authMiddleware, updatePassword);
 router.post("/login", loginUser);
 router.post("/admin-login", loginAdmin);
@@ -64,7 +59,6 @@ router.get("/getmyorders", authMiddleware, getMyOrders);
 router.get("/get-all-orders", authMiddleware, isAdmin, getAllOrders);
 router.get("/get-order/:id", authMiddleware, isAdmin, getSingleOrder);
 router.put("/update-order/:id", authMiddleware, isAdmin, updateOrder);
-// router.post("/getorderbyuser/:id", authMiddleware, isAdmin, getOrderByUserId);
 router.get("/getMonthWiseOrderIncome", authMiddleware, getMonthWiseOrderIncome);
 router.get("/getyearlyorders", authMiddleware, getYearlyTotalOrders);
 router.get("/refresh", handleRefreshToken);
@@ -82,7 +76,7 @@ router.delete(
   authMiddleware,
   updateProductQuantityFromCart
 );
-// router.delete("/empty-cart", authMiddleware, emptyCart);
+router.delete("/empty-cart", authMiddleware, emptyCart);
 router.delete("/:id", deleteUser);
 router.put("/edit-user", authMiddleware, updateUser);
 router.put("/save-address", authMiddleware, saveAddress);

@@ -35,7 +35,6 @@ const CheckOut = () => {
   const navigate = useNavigate();
   const cartState = useSelector((state) => state?.auth?.cartProducts);
   const userState = useSelector((state) => state?.auth?.user);
-  const authState = useSelector((state) => state?.auth);
   const [totalAmount, setTotalAmount] = useState(null);
   const [shippingInfo, setShippingInfo] = useState(null);
 
@@ -108,10 +107,6 @@ const CheckOut = () => {
     [cartState]
   );
 
-  useEffect(() => {
-    dispatch(getUserCart());
-  }, []);
-
   const handleChange = (event) => {
     setPaymentGateway(event.target.value);
   };
@@ -146,7 +141,6 @@ const CheckOut = () => {
         state: selectedState ? selectedState?.name : "",
         city: selectedCity ? selectedCity?.name : "",
       };
-      console.log(updatedShippingInfo);
 
       setShippingInfo(updatedShippingInfo);
       localStorage.setItem("shippingInfo", JSON.stringify(updatedShippingInfo));
@@ -302,7 +296,6 @@ const CheckOut = () => {
                   );
 
                   if (result && result?.data) {
-                    console.log(updatedShippingInfo);
                     dispatch(
                       createAnOrder({
                         totalPrice: totalAmount,

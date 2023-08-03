@@ -1,7 +1,10 @@
 const express = require("express");
 const path = require("path");
+const fs = require("fs");
 const db = require("./config/connection.js");
 const app = express();
+app.timeout = 300000; // 5 minutes
+
 require("dotenv").config();
 const bodyParser = require("body-parser");
 const authRouter = require("./routes/authRoute");
@@ -40,21 +43,43 @@ app.use("/api/upload", uploadRouter);
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "../client/build")));
   app.use(express.static(path.join(__dirname, "../admin/build")));
+
+  app.get("/admin", (req, res) => {
+    console.log("Admin route accessed");
+    res.sendFile(path.join(`${__dirname}/../admin/build/index.html`));
+  });
+
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(`${__dirname}/../client/build/index.html`));
+  });
+
+  const publicDir = path.join(__dirname, "public");
+  const imagesDir = path.join(publicDir, "images");
+  const blogsDir = path.join(imagesDir, "blogs");
+  const productsDir = path.join(imagesDir, "products");
+
+  if (!fs.existsSync(publicDir)) {
+    fs.mkdirSync(publicDir);
+  }
+
+  if (!fs.existsSync(imagesDir)) {
+    fs.mkdirSync(imagesDir);
+  }
+
+  if (!fs.existsSync(blogsDir)) {
+    fs.mkdirSync(blogsDir);
+  }
+
+  if (!fs.existsSync(productsDir)) {
+    fs.mkdirSync(productsDir);
+  }
 }
-
-app.get("/admin", (req, res) => {
-  res.sendFile(path.join(`${__dirname}/../admin/build/index.html`));
-});
-
-app.get("*", (req, res) => {
-  res.sendFile(path.join(`${__dirname}/../client/build/index.html`));
-});
 
 app.use(notFound);
 app.use(errorHandler);
 
 db.once("open", () => {
   app.listen(PORT, () => {
-    console.log(`🌍 Now listening on localhost:${PORT}`);
+    console.log(`🌍 Now listening on PORT:${PORT}`);
   });
 });

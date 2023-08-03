@@ -34,14 +34,20 @@ const uploadPhoto = multer({
 
 const productImgResize = async (req, res, next) => {
   if (!req.files) return next();
+
+  const productImagesPath = "public/images/products";
+  if (!fs.existsSync(productImagesPath)) {
+    fs.mkdirSync(productImagesPath, { recursive: true });
+  }
+
   await Promise.all(
     req.files.map(async (file) => {
       await sharp(file.path)
-        .resize(300, 300)
+        .resize(300, 300, { fit: "inside" }) // Add fit option to preserve aspect ratio
         .toFormat("jpeg")
-        .jpeg({ quality: 90 })
-        .toFile(`public/images/products/${file.filename}`);
-      fs.unlinkSync(`public/images/products/${file.filename}`);
+        .jpeg({ quality: 80 }) // Decrease quality to 80
+        .toFile(`${productImagesPath}/${file.filename}`);
+      fs.unlinkSync(`${productImagesPath}/${file.filename}`);
     })
   );
   next();
@@ -49,14 +55,20 @@ const productImgResize = async (req, res, next) => {
 
 const blogImgResize = async (req, res, next) => {
   if (!req.files) return next();
+
+  const blogImagesPath = "public/images/blogs";
+  if (!fs.existsSync(blogImagesPath)) {
+    fs.mkdirSync(blogImagesPath, { recursive: true });
+  }
+
   await Promise.all(
     req.files.map(async (file) => {
       await sharp(file.path)
-        .resize(300, 300)
+        .resize(300, 300, { fit: "inside" }) // Add fit option to preserve aspect ratio
         .toFormat("jpeg")
-        .jpeg({ quality: 90 })
-        .toFile(`public/images/blogs/${file.filename}`);
-      fs.unlinkSync(`public/images/blogs/${file.filename}`);
+        .jpeg({ quality: 80 }) // Decrease quality to 80
+        .toFile(`${blogImagesPath}/${file.filename}`);
+      fs.unlinkSync(`${blogImagesPath}/${file.filename}`);
     })
   );
   next();

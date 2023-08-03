@@ -30,7 +30,7 @@ const SpecialProduct = (props) => {
               <span className="red-p">$ {price}</span> &nbsp;{" "}
               <strike>$ 200</strike>
             </p>
-         
+
             <div className="prod-count my-3">
               <p>Products: {quantity}</p>
               <div className="progress">
